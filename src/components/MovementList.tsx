@@ -11,11 +11,11 @@ const MovementList = ({ movements }: Props): JSX.Element => {
         <table>
             <thead>
                 <tr>
-                    <td>Categoría</td>
-                    <td>Tipo</td>
-                    <td>Fecha</td>
-                    <td>Descripción</td>
-                    <td>Monto</td>
+                    <th>Categoría</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,7 +24,7 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                         categories.find((c) => c.id === movement.categoryId)
                             ?.name || "N/A";
                     return (
-                        <tr>
+                        <tr key={movement.id}>
                             <td>{categoryName}</td>
                             <td>{movement.type}</td>
                             <td>{movement.date}</td>
