@@ -4,6 +4,7 @@ import { useState, type JSX } from "react";
 
 import type { Movement, NewMovement } from "./types";
 import MovementForm from "./components/MovementForm";
+import MovementList from "./components/MovementList";
 
 function App(): JSX.Element {
     const [movements, setMovements] = useState<Movement[]>([]);
@@ -27,6 +28,7 @@ function App(): JSX.Element {
             <h1>Personal Finances</h1>
             <p>Enter a new Movement:</p>
             <MovementForm onAddMovement={addMovement} />
+            <MovementList movements={movements} />
         </>
     );
 }
