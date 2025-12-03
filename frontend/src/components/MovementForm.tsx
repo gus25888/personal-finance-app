@@ -1,6 +1,11 @@
 import { useState, type JSX } from "react";
 import { categories } from "../data/categories";
-import type { MovementType, NewMovement } from "../types";
+import {
+    MOVEMENT_TYPE,
+    MOVEMENT_TYPE_LABEL,
+    type MovementType,
+    type NewMovement,
+} from "../types";
 
 type Props = {
     onAddMovement: (movement: NewMovement) => void;
@@ -11,7 +16,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState(0);
     const [categoryId, setCategoryId] = useState(categories[0].id);
-    const [type, setType] = useState<MovementType>("expense");
+    const [type, setType] = useState<MovementType>(MOVEMENT_TYPE.EXPENSE);
 
     const onChangeDate = (event: React.ChangeEvent<HTMLInputElement>) =>
         setDate(event.target.value);
@@ -55,7 +60,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
         setDescription("");
         setAmount(0);
         setCategoryId(categories[0].id);
-        setType("expense");
+        setType(MOVEMENT_TYPE.EXPENSE);
     };
 
     return (
@@ -68,22 +73,22 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
                             type="radio"
                             id="movementType1"
                             name="type"
-                            value="income"
-                            checked={type === "income"}
+                            value={MOVEMENT_TYPE.INCOME}
+                            checked={type === MOVEMENT_TYPE.INCOME}
                             onChange={onChangeType}
                         />
-                        {"Income"}
+                        {MOVEMENT_TYPE_LABEL.INCOME}
                     </label>
                     <label className="radio-option">
                         <input
                             type="radio"
                             id="movementType2"
                             name="type"
-                            value="expense"
-                            checked={type === "expense"}
+                            value={MOVEMENT_TYPE.EXPENSE}
+                            checked={type === MOVEMENT_TYPE.EXPENSE}
                             onChange={onChangeType}
                         />
-                        {"Expense"}
+                        {MOVEMENT_TYPE_LABEL.EXPENSE}
                     </label>
                 </div>
                 <div className="form-group">
