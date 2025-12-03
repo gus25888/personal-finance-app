@@ -24,12 +24,11 @@ function App(): JSX.Element {
     console.log(movements);
 
     return (
-        <>
-            <h1>Personal Finances</h1>
-            <p>Enter a new Movement:</p>
+        <div className="app-container">
+            <h1 className="app-title">Personal Finances</h1>
             <MovementForm onAddMovement={addMovement} />
             <MovementList movements={movements} />
-        </>
+        </div>
     );
 }
 

@@ -1,45 +1,131 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgba(11, 11, 11, 0.945);
+  color: rgba(255, 255, 255, 0.911);
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.app-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* --- FORMULARIO --- */
+.app-container {
+  margin: 0 auto;
+  max-width: 1300px;
+  padding: 5px;
+}
+
+.form-section {
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.form-title {
+  font-size: 1.25em;
+  font-weight: 600;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.form-group {
+  font-size: 1em;
+  margin-bottom: 15px;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.form-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.form-input {
+
+  /* elimina estilos nativos */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  min-width: 100%;
+  padding: 8px 12px;
+  border: 1px lightgray solid;
+  border-radius: 5px;
+  transition-duration: 100ms;
+  background-color: #ffffff;
+  color: #000;
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+.form-input::placeholder {
+  color: darkgrey;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.form-input:focus {
+  border-color: #4a9fff;
+  /* borde visible */
+  outline: none;
+  /* quita borde azul del navegador */
+  box-shadow: 0 0 4px rgba(74, 159, 255, 0.6);
+  /* sombra REAL */
 }
 
-.card {
-  padding: 2em;
+
+.form-button {
+  background-color: rgb(11, 216, 11);
+  border: 1px rgb(0, 70, 20) solid;
+  margin: 5px;
+  width: fit-content;
+  padding: 10px;
+  border-radius: 5px;
+  color: rgb(0, 70, 20);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.form-button:hover {
+  background-color: rgb(37, 202, 37);
+  border-color: lightgreen;
+  box-shadow: 0 0 4px rgba(144, 238, 144, 0.7);
+}
+
+.radio-group {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* Label para cada opción */
+.radio-option {
+  display: inline-block;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #555;
 }

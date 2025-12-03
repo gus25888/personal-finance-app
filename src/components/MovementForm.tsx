@@ -61,70 +61,98 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="movementType1">
+        <div className="form-section">
+            <p className="form-title">Enter a new Movement</p>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label className="radio-option">
+                        <input
+                            type="radio"
+                            id="movementType1"
+                            name="type"
+                            value="income"
+                            checked={type === "income"}
+                            onChange={onChangeType}
+                        />
+                        {"Income"}
+                    </label>
+                    <label className="radio-option">
+                        <input
+                            type="radio"
+                            id="movementType2"
+                            name="type"
+                            value="expense"
+                            checked={type === "expense"}
+                            onChange={onChangeType}
+                        />
+                        {"Expense"}
+                    </label>
+                </div>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="movementDate">
+                        Date
+                    </label>
                     <input
-                        type="radio"
-                        id="movementType1"
-                        name="type"
-                        value="income"
-                        checked={type === "income"}
-                        onChange={onChangeType}
+                        id="movementDate"
+                        className="form-input"
+                        type="date"
+                        value={date}
+                        onChange={onChangeDate}
                     />
-                    {"Income"}
-                </label>
-                <label htmlFor="movementType2">
+                </div>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="movementDescription">
+                        Description
+                    </label>
+                    <textarea
+                        id="movementDescription"
+                        className="form-input"
+                        rows={3}
+                        value={description}
+                        onChange={onChangeDescription}
+                    />
+                </div>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="movementAmount">
+                        Amount
+                    </label>
                     <input
-                        type="radio"
-                        id="movementType2"
-                        name="type"
-                        value="expense"
-                        checked={type === "expense"}
-                        onChange={onChangeType}
+                        id="movementAmount"
+                        className="form-input"
+                        type="number"
+                        value={amount}
+                        onChange={onChangeAmount}
                     />
-                    {"Expense"}
-                </label>
-            </div>
-            <label htmlFor="movementDate">Date</label>
-            <input
-                id="movementDate"
-                type="date"
-                value={date}
-                onChange={onChangeDate}
-            />
-            <label htmlFor="movementDescription">Description</label>
-            <textarea
-                id="movementDescription"
-                value={description}
-                onChange={onChangeDescription}
-            />
-            <label htmlFor="movementAmount">Amount</label>
-            <input
-                id="movementAmount"
-                type="number"
-                value={amount}
-                onChange={onChangeAmount}
-            />
-
-            <label htmlFor="movementCategory">Category</label>
-            <div>
-                <select
-                    id="movementCategory"
-                    value={categoryId}
-                    onChange={onChangeCategoryId}
-                >
-                    {categories.map((category) => {
-                        return (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        );
-                    })}
-                </select>
-            </div>
-            <button type="submit">Save Movement</button>
-        </form>
+                </div>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="movementCategory">
+                        Category
+                    </label>
+                    <div className="select-wrapper">
+                        <select
+                            id="movementCategory"
+                            className="form-input"
+                            value={categoryId}
+                            onChange={onChangeCategoryId}
+                        >
+                            {categories.map((category) => {
+                                return (
+                                    <option
+                                        key={category.id}
+                                        value={category.id}
+                                    >
+                                        {category.name}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" className="form-button">
+                    Save Movement
+                </button>
+            </form>
+        </div>
     );
 };
 
