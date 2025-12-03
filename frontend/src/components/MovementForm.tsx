@@ -17,9 +17,9 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
         setDate(event.target.value);
     const onChangeDescription = (
         event: React.ChangeEvent<HTMLTextAreaElement>
-    ) => setDescription(event.target.value);
+    ) => setDescription(event.target.value.trim());
     const onChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setAmount(event.target.value === "" ? 0 : Number(event.target.value));
+        setAmount(event.target.value === "" ? -1 : Number(event.target.value));
     const onChangeCategoryId = (event: React.ChangeEvent<HTMLSelectElement>) =>
         setCategoryId(Number(event.target.value));
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -56,8 +56,6 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
         setAmount(0);
         setCategoryId(categories[0].id);
         setType("expense");
-
-        return newMovement;
     };
 
     return (
