@@ -129,3 +129,77 @@ body {
   pointer-events: none;
   color: #555;
 }
+
+.table-section {
+  padding: 10px;
+}
+
+.table-title {
+  font-size: 1.25em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.movements-table {
+  width: 100%;
+  border-radius: 5px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px lightgray solid;
+  color: #ffffff;
+}
+
+/* Esquina superior izquierda */
+.movements-table thead tr:first-child th:first-child {
+  border-top-left-radius: 5px;
+}
+
+/* Esquina superior derecha */
+.movements-table thead tr:first-child th:last-child {
+  border-top-right-radius: 5px;
+}
+
+/* Esquina inferior izquierda */
+.movements-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 5px;
+}
+
+/* Esquina inferior derecha */
+.movements-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 5px;
+}
+
+.table-header {
+  background-color: #555555bb;
+  font-weight: 600;
+}
+
+.table-header-cell {
+  text-align: center;
+  padding: 8px;
+}
+
+.table-row {
+  background-color: #64636398;
+}
+
+.table-row:hover {
+  background-color: #707070;
+}
+
+.table-cell {
+  padding: 8px;
+  text-align: left;
+}
+
+.table-cell-center {
+  text-align: center;
+}
+
+.table-cell-right {
+  text-align: right;
+}
+
+.table-row:nth-child(even) {
+  background-color: #5a5959;
+}

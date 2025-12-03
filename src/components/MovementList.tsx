@@ -7,37 +7,48 @@ type Props = {
 };
 
 const MovementList = ({ movements }: Props): JSX.Element => {
-    const movementsTable = (
-        <table>
-            <thead>
-                <tr>
-                    <th>Categoría</th>
-                    <th>Tipo</th>
-                    <th>Fecha</th>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                </tr>
-            </thead>
-            <tbody>
-                {movements.map((movement) => {
-                    const categoryName =
-                        categories.find((c) => c.id === movement.categoryId)
-                            ?.name || "N/A";
-                    return (
-                        <tr key={movement.id}>
-                            <td>{categoryName}</td>
-                            <td>{movement.type}</td>
-                            <td>{movement.date}</td>
-                            <td>{movement.description}</td>
-                            <td>{movement.amount}</td>
-                        </tr>
-                    );
-                })}
-            </tbody>
-        </table>
+    return (
+        <section className="table-section">
+            <p className="table-title">Movements List</p>
+            <table className="movements-table">
+                <thead className="table-header">
+                    <tr>
+                        <th className="table-header-cell">Categoría</th>
+                        <th className="table-header-cell">Tipo</th>
+                        <th className="table-header-cell">Fecha</th>
+                        <th className="table-header-cell">Descripción</th>
+                        <th className="table-header-cell">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {movements.map((movement) => {
+                        const categoryName =
+                            categories.find((c) => c.id === movement.categoryId)
+                                ?.name || "N/A";
+                        return (
+                            <tr key={movement.id} className="table-row">
+                                <td className="table-cell table-cell-center">
+                                    {categoryName}
+                                </td>
+                                <td className="table-cell table-cell-center">
+                                    {movement.type}
+                                </td>
+                                <td className="table-cell table-cell-center">
+                                    {movement.date}
+                                </td>
+                                <td className="table-cell">
+                                    {movement.description}
+                                </td>
+                                <td className="table-cell table-cell-right">
+                                    {movement.amount}
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </section>
     );
-
-    return movementsTable;
 };
 
 export default MovementList;
