@@ -21,6 +21,9 @@ const MovementList = ({ movements }: Props): JSX.Element => {
     const [movementCategory, setMovementCategory] =
         useState<CategoryFilter>(CATEGORY_FILTER_ALL);
 
+    const [movementStartDate, setMovementStartDate] = useState<string>("");
+    const [movementEndDate, setMovementEndDate] = useState<string>("");
+
     return (
         <section className="table-section">
             <p className="table-title">Movements List</p>
@@ -29,6 +32,10 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                 setMovementType={setMovementType}
                 movementCategory={movementCategory}
                 setMovementCategory={setMovementCategory}
+                movementStartDate={movementStartDate}
+                setMovementStartDate={setMovementStartDate}
+                movementEndDate={movementEndDate}
+                setMovementEndDate={setMovementEndDate}
             />
             <table className="movements-table">
                 <thead className="table-header">
@@ -52,6 +59,20 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                                 ? true
                                 : movement.categoryId === movementCategory
                         )
+                        .filter((movement) => {
+                            if (!movementStartDate && !movementEndDate) {
+                                return true;
+                            } else if (movementStartDate && !movementEndDate) {
+                                return movement.date >= movementStartDate;
+                            } else if (!movementStartDate && movementEndDate) {
+                                return movement.date <= movementEndDate;
+                            } else {
+                                return (
+                                    movement.date >= movementStartDate &&
+                                    movement.date <= movementEndDate
+                                );
+                            }
+                        })
                         .map((movement) => {
                             const categoryName =
                                 categories.find(
