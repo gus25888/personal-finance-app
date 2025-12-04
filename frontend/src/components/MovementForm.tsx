@@ -14,7 +14,7 @@ type Props = {
 const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState<string>("");
     const [categoryId, setCategoryId] = useState(categories[0].id);
     const [type, setType] = useState<MovementType>(MOVEMENT_TYPE.EXPENSE);
 
@@ -24,7 +24,11 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
         event: React.ChangeEvent<HTMLTextAreaElement>
     ) => setDescription(event.target.value.trim());
     const onChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setAmount(event.target.value === "" ? -1 : Number(event.target.value));
+        setAmount(
+            event.target.value === "" || isNaN(Number(event.target.value))
+                ? ""
+                : event.target.value
+        );
     const onChangeCategoryId = (event: React.ChangeEvent<HTMLSelectElement>) =>
         setCategoryId(Number(event.target.value));
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -41,7 +45,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
             alert("La descripción es un valor requerido");
             return;
         }
-        if (amount < 1) {
+        if (Number(amount) < 1) {
             alert("La cantidad es un valor requerido mayor a 0");
             return;
         }
@@ -49,7 +53,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
         const newMovement: NewMovement = {
             date,
             description,
-            amount,
+            amount: Number(amount),
             categoryId,
             type,
         };
@@ -58,9 +62,11 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
 
         setDate("");
         setDescription("");
-        setAmount(0);
+        setAmount("");
         setCategoryId(categories[0].id);
         setType(MOVEMENT_TYPE.EXPENSE);
+
+        alert("Registro guardado correctamente");
     };
 
     return (
