@@ -1,15 +1,29 @@
-import type { JSX } from "react";
-import type { Movement } from "../types";
+import { useState, type JSX } from "react";
+
+import {
+    MOVEMENT_TYPE_FILTER,
+    type Movement,
+    type MovementTypeFilter,
+} from "../types";
 import { categories } from "../data/categories";
+import MovementListFilters from "./MovementListFilters";
 
 type Props = {
     movements: Movement[];
 };
 
 const MovementList = ({ movements }: Props): JSX.Element => {
+    const [movementType, setMovementType] = useState<MovementTypeFilter>(
+        MOVEMENT_TYPE_FILTER.ALL
+    );
+
     return (
         <section className="table-section">
             <p className="table-title">Movements List</p>
+            <MovementListFilters
+                movementType={movementType}
+                setMovementType={setMovementType}
+            />
             <table className="movements-table">
                 <thead className="table-header">
                     <tr>
@@ -21,30 +35,37 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                     </tr>
                 </thead>
                 <tbody>
-                    {movements.map((movement) => {
-                        const categoryName =
-                            categories.find((c) => c.id === movement.categoryId)
-                                ?.name || "N/A";
-                        return (
-                            <tr key={movement.id} className="table-row">
-                                <td className="table-cell table-cell-center">
-                                    {categoryName}
-                                </td>
-                                <td className="table-cell table-cell-center">
-                                    {movement.type}
-                                </td>
-                                <td className="table-cell table-cell-center">
-                                    {movement.date}
-                                </td>
-                                <td className="table-cell">
-                                    {movement.description}
-                                </td>
-                                <td className="table-cell table-cell-right">
-                                    {movement.amount}
-                                </td>
-                            </tr>
-                        );
-                    })}
+                    {movements
+                        .filter((movement) =>
+                            movementType === MOVEMENT_TYPE_FILTER.ALL
+                                ? true
+                                : movement.type === movementType
+                        )
+                        .map((movement) => {
+                            const categoryName =
+                                categories.find(
+                                    (c) => c.id === movement.categoryId
+                                )?.name || "N/A";
+                            return (
+                                <tr key={movement.id} className="table-row">
+                                    <td className="table-cell table-cell-center">
+                                        {categoryName}
+                                    </td>
+                                    <td className="table-cell table-cell-center">
+                                        {movement.type}
+                                    </td>
+                                    <td className="table-cell table-cell-center">
+                                        {movement.date}
+                                    </td>
+                                    <td className="table-cell">
+                                        {movement.description}
+                                    </td>
+                                    <td className="table-cell table-cell-right">
+                                        {movement.amount}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                 </tbody>
             </table>
         </section>
