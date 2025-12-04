@@ -1,7 +1,9 @@
 import { useState, type JSX } from "react";
 
 import {
+    CATEGORY_FILTER_ALL,
     MOVEMENT_TYPE_FILTER,
+    type CategoryFilter,
     type Movement,
     type MovementTypeFilter,
 } from "../types";
@@ -16,6 +18,8 @@ const MovementList = ({ movements }: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<MovementTypeFilter>(
         MOVEMENT_TYPE_FILTER.ALL
     );
+    const [movementCategory, setMovementCategory] =
+        useState<CategoryFilter>(CATEGORY_FILTER_ALL);
 
     return (
         <section className="table-section">
@@ -23,6 +27,8 @@ const MovementList = ({ movements }: Props): JSX.Element => {
             <MovementListFilters
                 movementType={movementType}
                 setMovementType={setMovementType}
+                movementCategory={movementCategory}
+                setMovementCategory={setMovementCategory}
             />
             <table className="movements-table">
                 <thead className="table-header">
@@ -40,6 +46,11 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                             movementType === MOVEMENT_TYPE_FILTER.ALL
                                 ? true
                                 : movement.type === movementType
+                        )
+                        .filter((movement) =>
+                            movementCategory === CATEGORY_FILTER_ALL
+                                ? true
+                                : movement.categoryId === movementCategory
                         )
                         .map((movement) => {
                             const categoryName =
