@@ -3,6 +3,7 @@ import { useState, type JSX } from "react";
 import {
     CATEGORY_FILTER_ALL,
     MOVEMENT_TYPE_FILTER,
+    MOVEMENT_TYPE_LABEL,
     type CategoryFilter,
     type Movement,
     type MovementTypeFilter,
@@ -84,7 +85,7 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                                         {categoryName}
                                     </td>
                                     <td className="table-cell table-cell-center">
-                                        {movement.type}
+                                        {MOVEMENT_TYPE_LABEL[movement.type]}
                                     </td>
                                     <td className="table-cell table-cell-center">
                                         {movement.date}

@@ -77,7 +77,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
                             checked={type === MOVEMENT_TYPE.INCOME}
                             onChange={onChangeType}
                         />
-                        {MOVEMENT_TYPE_LABEL.INCOME}
+                        {MOVEMENT_TYPE_LABEL.income}
                     </label>
                     <label className="radio-option">
                         <input
@@ -88,7 +88,7 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
                             checked={type === MOVEMENT_TYPE.EXPENSE}
                             onChange={onChangeType}
                         />
-                        {MOVEMENT_TYPE_LABEL.EXPENSE}
+                        {MOVEMENT_TYPE_LABEL.expense}
                     </label>
                 </div>
                 <div className="form-group">

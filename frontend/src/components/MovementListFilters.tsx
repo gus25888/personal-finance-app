@@ -56,7 +56,7 @@ const MovementListFilters = ({
                         checked={movementType === MOVEMENT_TYPE_FILTER.ALL}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.ALL}
+                    {MOVEMENT_TYPE_FILTER_LABEL.all}
                 </label>
                 <label className="radio-option">
                     <input
@@ -66,7 +66,7 @@ const MovementListFilters = ({
                         checked={movementType === MOVEMENT_TYPE_FILTER.INCOME}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.INCOME}
+                    {MOVEMENT_TYPE_FILTER_LABEL.income}
                 </label>
                 <label className="radio-option">
                     <input
@@ -76,7 +76,7 @@ const MovementListFilters = ({
                         checked={movementType === MOVEMENT_TYPE_FILTER.EXPENSE}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.EXPENSE}
+                    {MOVEMENT_TYPE_FILTER_LABEL.expense}
                 </label>
             </div>
 

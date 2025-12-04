@@ -10,13 +10,13 @@ export const MOVEMENT_TYPE_FILTER = {
 } as const;
 
 export const MOVEMENT_TYPE_LABEL = {
-    INCOME: "Income",
-    EXPENSE: "Expense",
+    income: "Income",
+    expense: "Expense",
 } as const;
 
 export const MOVEMENT_TYPE_FILTER_LABEL = {
     ...MOVEMENT_TYPE_LABEL,
-    ALL: "All",
+    all: "All",
 } as const;
 
 export type MovementType = (typeof MOVEMENT_TYPE)[keyof typeof MOVEMENT_TYPE];
