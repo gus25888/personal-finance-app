@@ -20,9 +20,10 @@ import { categories } from "../data/categories";
 
 type Props = {
     movements: Movement[];
+    onRemoveMovement: (id: number) => void;
 };
 
-const MovementList = ({ movements }: Props): JSX.Element => {
+const MovementList = ({ movements, onRemoveMovement }: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<MovementTypeFilter>(
         MOVEMENT_TYPE_FILTER.ALL
     );
@@ -64,6 +65,7 @@ const MovementList = ({ movements }: Props): JSX.Element => {
             <table className="movements-table">
                 <thead className="table-header">
                     <tr>
+                        <th className="table-header-cell">Eliminar</th>
                         <th className="table-header-cell">Categoría</th>
                         <th className="table-header-cell">Tipo</th>
                         <th className="table-header-cell">Fecha</th>
@@ -74,6 +76,18 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                 <tbody>
                     {filteredMovements.map((movement) => (
                         <tr key={movement.id} className="table-row">
+                            <td className="table-cell table-cell-center">
+                                <button
+                                    className="delete-button"
+                                    onClick={() => {
+                                        if (confirm("¿Eliminar movimiento?")) {
+                                            onRemoveMovement(movement.id);
+                                        }
+                                    }}
+                                >
+                                    X
+                                </button>
+                            </td>
                             <td className="table-cell table-cell-center">
                                 {getCategoryName(
                                     categories,
