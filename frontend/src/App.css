@@ -203,3 +203,18 @@ body {
 .table-row:nth-child(even) {
   background-color: #5a5959;
 }
+
+.movement-totals-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: #444;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.movement-total-item {
+  font-weight: 600;
+}

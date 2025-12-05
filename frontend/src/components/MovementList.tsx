@@ -25,6 +25,48 @@ const MovementList = ({ movements }: Props): JSX.Element => {
     const [movementStartDate, setMovementStartDate] = useState<string>("");
     const [movementEndDate, setMovementEndDate] = useState<string>("");
 
+    const filteredMovements = movements
+        // type
+        .filter((movement) =>
+            movementType === MOVEMENT_TYPE_FILTER.ALL
+                ? true
+                : movement.type === movementType
+        )
+        // category
+        .filter((movement) =>
+            movementCategory === CATEGORY_FILTER_ALL
+                ? true
+                : movement.categoryId === movementCategory
+        )
+        // start and end date
+        .filter((movement) => {
+            if (!movementStartDate && !movementEndDate) {
+                return true;
+            } else if (movementStartDate && !movementEndDate) {
+                return movement.date >= movementStartDate;
+            } else if (!movementStartDate && movementEndDate) {
+                return movement.date <= movementEndDate;
+            } else {
+                return (
+                    movement.date >= movementStartDate &&
+                    movement.date <= movementEndDate
+                );
+            }
+        });
+
+    let totalIncome = 0,
+        totalExpense = 0;
+
+    filteredMovements.forEach((movement) => {
+        if (movement.type === MOVEMENT_TYPE_FILTER.INCOME) {
+            totalIncome += movement.amount;
+        } else {
+            totalExpense += movement.amount;
+        }
+    });
+
+    const balance = totalIncome - totalExpense;
+
     return (
         <section className="table-section">
             <p className="table-title">Movements List</p>
@@ -38,6 +80,11 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                 movementEndDate={movementEndDate}
                 setMovementEndDate={setMovementEndDate}
             />
+            <p className="movement-totals-container">
+                <span className="movement-total-item">{`Income: $ ${totalIncome}`}</span>
+                <span className="movement-total-item">{`Expenses: $ ${totalExpense}`}</span>
+                <span className="movement-total-item">{`Balance: $ ${balance}`}</span>
+            </p>
             <table className="movements-table">
                 <thead className="table-header">
                     <tr>
@@ -49,56 +96,27 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                     </tr>
                 </thead>
                 <tbody>
-                    {movements
-                        .filter((movement) =>
-                            movementType === MOVEMENT_TYPE_FILTER.ALL
-                                ? true
-                                : movement.type === movementType
-                        )
-                        .filter((movement) =>
-                            movementCategory === CATEGORY_FILTER_ALL
-                                ? true
-                                : movement.categoryId === movementCategory
-                        )
-                        .filter((movement) => {
-                            if (!movementStartDate && !movementEndDate) {
-                                return true;
-                            } else if (movementStartDate && !movementEndDate) {
-                                return movement.date >= movementStartDate;
-                            } else if (!movementStartDate && movementEndDate) {
-                                return movement.date <= movementEndDate;
-                            } else {
-                                return (
-                                    movement.date >= movementStartDate &&
-                                    movement.date <= movementEndDate
-                                );
-                            }
-                        })
-                        .map((movement) => {
-                            const categoryName =
-                                categories.find(
+                    {filteredMovements.map((movement) => (
+                        <tr key={movement.id} className="table-row">
+                            <td className="table-cell table-cell-center">
+                                {categories.find(
                                     (c) => c.id === movement.categoryId
-                                )?.name || "N/A";
-                            return (
-                                <tr key={movement.id} className="table-row">
-                                    <td className="table-cell table-cell-center">
-                                        {categoryName}
-                                    </td>
-                                    <td className="table-cell table-cell-center">
-                                        {MOVEMENT_TYPE_LABEL[movement.type]}
-                                    </td>
-                                    <td className="table-cell table-cell-center">
-                                        {movement.date}
-                                    </td>
-                                    <td className="table-cell">
-                                        {movement.description}
-                                    </td>
-                                    <td className="table-cell table-cell-right">
-                                        {movement.amount}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                                )?.name || "N/A"}
+                            </td>
+                            <td className="table-cell table-cell-center">
+                                {MOVEMENT_TYPE_LABEL[movement.type]}
+                            </td>
+                            <td className="table-cell table-cell-center">
+                                {movement.date}
+                            </td>
+                            <td className="table-cell">
+                                {movement.description}
+                            </td>
+                            <td className="table-cell table-cell-right">
+                                {movement.amount}
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </section>
