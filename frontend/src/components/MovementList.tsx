@@ -8,8 +8,15 @@ import {
     type Movement,
     type MovementTypeFilter,
 } from "../types";
-import { categories } from "../data/categories";
+
+import {
+    filterMovements,
+    calculateTotals,
+    getCategoryName,
+} from "../helpers/movements/";
+
 import MovementListFilters from "./MovementListFilters";
+import { categories } from "../data/categories";
 
 type Props = {
     movements: Movement[];
@@ -25,47 +32,16 @@ const MovementList = ({ movements }: Props): JSX.Element => {
     const [movementStartDate, setMovementStartDate] = useState<string>("");
     const [movementEndDate, setMovementEndDate] = useState<string>("");
 
-    const filteredMovements = movements
-        // type
-        .filter((movement) =>
-            movementType === MOVEMENT_TYPE_FILTER.ALL
-                ? true
-                : movement.type === movementType
-        )
-        // category
-        .filter((movement) =>
-            movementCategory === CATEGORY_FILTER_ALL
-                ? true
-                : movement.categoryId === movementCategory
-        )
-        // start and end date
-        .filter((movement) => {
-            if (!movementStartDate && !movementEndDate) {
-                return true;
-            } else if (movementStartDate && !movementEndDate) {
-                return movement.date >= movementStartDate;
-            } else if (!movementStartDate && movementEndDate) {
-                return movement.date <= movementEndDate;
-            } else {
-                return (
-                    movement.date >= movementStartDate &&
-                    movement.date <= movementEndDate
-                );
-            }
-        });
+    const filteredMovements = filterMovements(
+        movements,
+        movementType,
+        movementCategory,
+        movementStartDate,
+        movementEndDate
+    );
 
-    let totalIncome = 0,
-        totalExpense = 0;
-
-    filteredMovements.forEach((movement) => {
-        if (movement.type === MOVEMENT_TYPE_FILTER.INCOME) {
-            totalIncome += movement.amount;
-        } else {
-            totalExpense += movement.amount;
-        }
-    });
-
-    const balance = totalIncome - totalExpense;
+    const { totalIncome, totalExpense, balance } =
+        calculateTotals(filteredMovements);
 
     return (
         <section className="table-section">
@@ -99,9 +75,10 @@ const MovementList = ({ movements }: Props): JSX.Element => {
                     {filteredMovements.map((movement) => (
                         <tr key={movement.id} className="table-row">
                             <td className="table-cell table-cell-center">
-                                {categories.find(
-                                    (c) => c.id === movement.categoryId
-                                )?.name || "N/A"}
+                                {getCategoryName(
+                                    categories,
+                                    movement.categoryId
+                                )}
                             </td>
                             <td className="table-cell table-cell-center">
                                 {MOVEMENT_TYPE_LABEL[movement.type]}
