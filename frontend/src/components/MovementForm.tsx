@@ -1,22 +1,46 @@
-import { useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { categories } from "../data/categories";
 import {
     MOVEMENT_TYPE,
     MOVEMENT_TYPE_LABEL,
+    type Movement,
     type MovementType,
     type NewMovement,
 } from "../types";
 
 type Props = {
+    movementToEdit: Movement | null;
     onAddMovement: (movement: NewMovement) => void;
+    onEditMovement: (movement: Movement) => void;
 };
 
-const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
+const MovementForm = ({
+    movementToEdit,
+    onAddMovement,
+    onEditMovement,
+}: Props): JSX.Element => {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState<string>("");
     const [categoryId, setCategoryId] = useState(categories[0].id);
     const [type, setType] = useState<MovementType>(MOVEMENT_TYPE.EXPENSE);
+
+    useEffect(() => {
+        if (movementToEdit) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDate(movementToEdit.date);
+            setDescription(movementToEdit.description);
+            setAmount(movementToEdit.amount.toString());
+            setCategoryId(movementToEdit.categoryId);
+            setType(movementToEdit.type);
+        } else {
+            setDate("");
+            setDescription("");
+            setAmount("");
+            setCategoryId(categories[0].id);
+            setType(MOVEMENT_TYPE.EXPENSE);
+        }
+    }, [movementToEdit]);
 
     const onChangeDate = (event: React.ChangeEvent<HTMLInputElement>) =>
         setDate(event.target.value);
@@ -50,21 +74,28 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
             return;
         }
 
-        const newMovement: NewMovement = {
-            date,
-            description,
-            amount: Number(amount),
-            categoryId,
-            type,
-        };
+        if (movementToEdit) {
+            const editedMovement: Movement = {
+                ...movementToEdit,
+                date,
+                description,
+                amount: Number(amount),
+                categoryId,
+                type,
+            };
 
-        onAddMovement(newMovement);
+            onEditMovement(editedMovement);
+        } else {
+            const newMovement: NewMovement = {
+                date,
+                description,
+                amount: Number(amount),
+                categoryId,
+                type,
+            };
 
-        setDate("");
-        setDescription("");
-        setAmount("");
-        setCategoryId(categories[0].id);
-        setType(MOVEMENT_TYPE.EXPENSE);
+            onAddMovement(newMovement);
+        }
 
         alert("Registro guardado correctamente");
     };
@@ -157,8 +188,11 @@ const MovementForm = ({ onAddMovement }: Props): JSX.Element => {
                         </select>
                     </div>
                 </div>
-                <button type="submit" className="form-button">
-                    Save Movement
+                <button
+                    type="submit"
+                    className={`form-button ${movementToEdit ? "editing" : ""}`}
+                >
+                    {movementToEdit ? "Update Movement" : "Save Movement"}
                 </button>
             </form>
         </div>

@@ -21,9 +21,14 @@ import { categories } from "../data/categories";
 type Props = {
     movements: Movement[];
     onRemoveMovement: (id: number) => void;
+    onEditMovement: (movement: Movement) => void;
 };
 
-const MovementList = ({ movements, onRemoveMovement }: Props): JSX.Element => {
+const MovementList = ({
+    movements,
+    onRemoveMovement,
+    onEditMovement,
+}: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<MovementTypeFilter>(
         MOVEMENT_TYPE_FILTER.ALL
     );
@@ -66,6 +71,7 @@ const MovementList = ({ movements, onRemoveMovement }: Props): JSX.Element => {
                 <thead className="table-header">
                     <tr>
                         <th className="table-header-cell">Eliminar</th>
+                        <th className="table-header-cell">Editar</th>
                         <th className="table-header-cell">Categoría</th>
                         <th className="table-header-cell">Tipo</th>
                         <th className="table-header-cell">Fecha</th>
@@ -83,6 +89,16 @@ const MovementList = ({ movements, onRemoveMovement }: Props): JSX.Element => {
                                         if (confirm("¿Eliminar movimiento?")) {
                                             onRemoveMovement(movement.id);
                                         }
+                                    }}
+                                >
+                                    X
+                                </button>
+                            </td>
+                            <td className="table-cell table-cell-center">
+                                <button
+                                    className="edit-button"
+                                    onClick={() => {
+                                        onEditMovement(movement);
                                     }}
                                 >
                                     X

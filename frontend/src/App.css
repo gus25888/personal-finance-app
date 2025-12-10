@@ -102,6 +102,18 @@ body {
   box-shadow: 0 0 4px rgba(144, 238, 144, 0.7);
 }
 
+.form-button.editing {
+  background-color: rgb(255, 165, 0);
+  border-color: rgb(200, 120, 0);
+  color: black;
+}
+
+.form-button.editing:hover {
+  background-color: rgb(255, 180, 50);
+  border-color: rgb(230, 150, 20);
+  box-shadow: 0 0 4px rgba(255, 200, 120, 0.7);
+}
+
 .radio-group {
   display: flex;
   gap: 15px;
