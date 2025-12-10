@@ -1,0 +1,12 @@
+services:
+    db:
+        image: postgres:17.7-alpine
+        restart: always
+        ports:
+            - 5432:5432
+        env_file: .env
+        container_name: pfa-db-dev
+        volumes:
+            - pfa-db-data-dev:/var/lib/postgresql/data
+volumes:
+    pfa-db-data-dev:
