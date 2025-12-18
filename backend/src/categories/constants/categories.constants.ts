@@ -1,1 +1,4 @@
-export type CATEGORY_TYPE = 'income' | 'expense';
+export enum CategoryType {
+  INCOME = 'income',
+  EXPENSE = 'expense',
+}
