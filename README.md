@@ -12,12 +12,14 @@ Para la configuración del entorno se debe generar un archivo `.env` dentro del 
 
 ## Levantamiento de la base de datos en desarrollo
 
-Con las configuraciones implementadas se debe proceder a abrir una terminal de comandos y ejecutar lo siguiente:
+Con las configuraciones implementadas se debe proceder a abrir Docker Desktop y luego una terminal de comandos y ejecutar lo siguiente:
 
 ```sh
 cd backend/docker
 docker compose -f docker-compose.dev.yml up -d
 ```
+
+> NOTA: El comando anterior solo se debe ejecutar la primera vez para crear el contenedor. Las siguientes iniciará automáticamente al abrir Docker Desktop.
 
 ## Validación de la conexión
 
