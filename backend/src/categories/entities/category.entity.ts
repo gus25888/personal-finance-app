@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Movement } from '../../movements/entities/movement.entity';
 
 @Entity('categories')
 export class Category {
@@ -25,6 +28,9 @@ export class Category {
     default: true,
   })
   isActive: boolean;
+
+  @OneToMany<Movement>(() => Movement, (movement) => movement.category)
+  movements: Movement[];
 
   @CreateDateColumn()
   createdAt: Date;
