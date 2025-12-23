@@ -1,13 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 
@@ -27,7 +22,7 @@ export class CategoriesService {
       await this.categoryRepository.save(category);
       return category;
     } catch (error) {
-      this.handleDBExceptions(error);
+      handleDBExceptions(error, this.logger);
     }
   }
 
@@ -49,15 +44,4 @@ export class CategoriesService {
   // update(id: number, updateCategoryDto: UpdateCategoryDto) {}
 
   // remove(id: number) {}
-
-  private handleDBExceptions(error: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (error.code === '23505') throw new BadRequestException(error.detail);
-
-    this.logger.error(error);
-
-    throw new InternalServerErrorException(
-      'Unexpected error, check server logs!',
-    );
-  }
 }

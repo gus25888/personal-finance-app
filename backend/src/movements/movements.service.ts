@@ -1,14 +1,8 @@
-import {
-  BadRequestException,
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
 import { CategoriesService } from '../categories/categories.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
@@ -44,7 +38,7 @@ export class MovementsService {
         },
       };
     } catch (error) {
-      this.handleDBExceptions(error);
+      handleDBExceptions(error, this.logger);
     }
   }
 
@@ -89,18 +83,5 @@ export class MovementsService {
 
   remove(id: number) {
     return `This action removes a #${id} movement`;
-  }
-
-  private handleDBExceptions(error: any) {
-    this.logger.error(error);
-    if (error instanceof HttpException) {
-      throw error;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (error.code === '23505') throw new BadRequestException(error.detail);
-
-    throw new InternalServerErrorException(
-      'Unexpected error, check server logs!',
-    );
   }
 }
