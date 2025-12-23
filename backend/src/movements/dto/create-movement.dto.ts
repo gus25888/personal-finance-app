@@ -3,12 +3,17 @@ import {
   IsDate,
   IsInt,
   IsString,
+  Max,
   Min,
   MinDate,
   MinLength,
 } from 'class-validator';
 
-const MIN_DATE = new Date(2020, 0, 1);
+import {
+  MAX_AMOUNT,
+  MIN_AMOUNT,
+  MIN_DATE,
+} from '../constants/movements.constants';
 
 export class CreateMovementDto {
   @IsString()
@@ -21,7 +26,8 @@ export class CreateMovementDto {
   date: string;
 
   @IsInt()
-  @Min(500)
+  @Min(MIN_AMOUNT)
+  @Max(MAX_AMOUNT)
   amount: number;
 
   @IsInt()
