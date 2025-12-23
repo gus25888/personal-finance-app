@@ -23,7 +23,7 @@ export class CreateMovementDto {
   @Type(() => Date)
   @IsDate()
   @MinDate(MIN_DATE)
-  date: string;
+  date: Date;
 
   @IsInt()
   @Min(MIN_AMOUNT)
