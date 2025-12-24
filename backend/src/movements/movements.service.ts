@@ -4,8 +4,7 @@ import { Repository } from 'typeorm';
 
 import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
 import { CategoriesService } from '../categories/categories.service';
-import { CreateMovementDto } from './dto/create-movement.dto';
-import { UpdateMovementDto } from './dto/update-movement.dto';
+import { CreateMovementDto, QueryMovementDto, UpdateMovementDto } from './dto';
 import { Movement } from './entities/movement.entity';
 
 @Injectable()
@@ -42,7 +41,8 @@ export class MovementsService {
     }
   }
 
-  async findAll() {
+  async findAll(query: QueryMovementDto) {
+    this.logger.log({ query });
     const movements = await this.movementsRepository.find({
       relations: { category: true },
     });
