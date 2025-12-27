@@ -33,9 +33,37 @@ postgres=# \conninfo
 
 Si se obtiene un mensaje "You are connected to database...", la base de datos ha sido levantada correctamente.
 
-## Próximos pasos
-
 ### Definición del modelo de datos
+
+El modelo de datos se encuentra definido conceptualmente en `docs/data-model.md`.
+
+Por otro lado, se encuentra definido de forma técnica como migraciones, las cuales están definidas en el directorio `backend/src/migrations`.
+
+### Backend
+
+Este sección contiene las especificaciones técnicas de la base de datos, además, de la funcionalidad levantada para poder gestionar los datos de la base de datos.
+
+#### Stack tecnológico utilizado en backend
+
+- NestJS
+- TypeORM
+- PostgreSQL
+- Docker
+- Swagger
+
+#### Configuración del entorno backend
+
+Para la configuración del entorno se debe generar un archivo `.env` dentro del directorio `backend`, en el cual se deben registrar las variables definidas en el archivo `.env.template` ubicado en el mismo directorio.
+
+Luego, se debe ejecutar el comando `npm install` para poder instalar todas las dependencias del proyecto.
+
+#### Levantamiento del entorno en desarrollo
+
+Para levantar la aplicación se requiere tener la base de datos corriendo según lo descrito en la sección "Levantamiento de la base de datos en desarrollo" y luego hacer uso del comando `npm run start:dev` desde el directorio `backend`.
+
+#### Endpoints implementados
+
+Los endpoints implementados están documentados a través de Swagger, el cual se encuentra accesible a través del navegador en la dirección [/api](http://localhost:3000/api), cuando la aplicación se encuentra funcionando.
 
 ### Migraciones de Base de Datos
 
@@ -78,7 +106,13 @@ npm run migrations:revert
 npm run migrations:show
 ```
 
-### Backend
+## Próximos pasos
+
+Lo que se encuentra después de este punto son elementos que faltan por implementar.
+
+- CRUD completo para Movements y Categories.
+- Integración con frontend
+- Siguientes Epics listadas en `docs/backlog`
 
 ### Integración
 
