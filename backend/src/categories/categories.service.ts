@@ -1,10 +1,20 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
+
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dtos/create-category.dto';
+import { UpdateCategoryDto } from './dtos/update-category.dto';
+
+import { CategoryRulesService } from '../category-rules/category-rules.service';
 
 @Injectable()
 export class CategoriesService {
@@ -13,6 +23,7 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    private readonly categoryRulesService: CategoryRulesService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
@@ -41,7 +52,50 @@ export class CategoriesService {
     return category;
   }
 
-  // update(id: number, updateCategoryDto: UpdateCategoryDto) {}
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    if (!updateCategoryDto) {
+      throw new BadRequestException(`Not valid data sent for the update.`);
+    }
 
-  // remove(id: number) {}
+    const category = await this.findOne(id);
+
+    if (category.deletedAt) {
+      throw new ConflictException(`Category '${id}' is already deleted.`);
+    }
+
+    if (
+      updateCategoryDto.type !== undefined &&
+      category.type !== updateCategoryDto.type
+    ) {
+      await this.categoryRulesService.assertCategoryTypeIsEditable(id);
+    }
+
+    try {
+      const categoryToUpdate = {
+        ...category,
+        updatedAt: new Date(),
+        ...updateCategoryDto,
+      };
+      return await this.categoryRepository.save(categoryToUpdate);
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+  }
+
+  async remove(id: number) {
+    const category = await this.findOne(id);
+
+    if (category.deletedAt) {
+      throw new ConflictException(`Category '${id}' is already deleted.`);
+    }
+
+    await this.categoryRulesService.assertCategoryIsErasable(category.id);
+
+    try {
+      category.deletedAt = new Date();
+      await this.categoryRepository.save(category);
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+  }
 }

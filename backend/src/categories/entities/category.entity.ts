@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -39,16 +40,7 @@ export class Category {
   @Column('text', {
     nullable: false,
   })
-  type: string;
-
-  @ApiProperty({
-    description: 'Category isActive value',
-    default: true,
-  })
-  @Column('boolean', {
-    default: true,
-  })
-  isActive: boolean;
+  type: CategoryType;
 
   @OneToMany<Movement>(() => Movement, (movement) => movement.category)
   movements: Movement[];
@@ -58,4 +50,7 @@ export class Category {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

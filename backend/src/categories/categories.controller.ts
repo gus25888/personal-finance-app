@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
+import { UpdateCategoryDto } from './dtos/update-category.dto';
 import { Category } from './entities/category.entity';
 
 @Controller('categories')
@@ -39,5 +50,48 @@ export class CategoriesController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
+  }
+
+  @Patch(':id')
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Category has associated movements: it cannot be modified.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Category was not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Not valid data sent for the update.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Category updated successfully',
+    type: Category,
+  })
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
+    return this.categoriesService.update(+id, updateCategoryDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Deletion performed successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Category is already deleted or has associated movements',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Category was not found',
+  })
+  remove(@Param('id') id: string) {
+    return this.categoriesService.remove(+id);
   }
 }

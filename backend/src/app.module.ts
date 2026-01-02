@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { CategoriesModule } from './categories/categories.module';
 import { MovementsModule } from './movements/movements.module';
+import { CategoryRulesModule } from './category-rules/category-rules.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MovementsModule } from './movements/movements.module';
     DatabaseModule,
     CategoriesModule,
     MovementsModule,
+    CategoryRulesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
