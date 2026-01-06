@@ -20,6 +20,7 @@ import { Category } from './entities/category.entity';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  // TODO: Change HTTP STATUS code from numbers to HttpStatus values
   @Get()
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({
@@ -48,6 +49,10 @@ export class CategoriesController {
     type: Category,
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Category name must be unique among active categories.',
+  })
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
@@ -55,7 +60,12 @@ export class CategoriesController {
   @Patch(':id')
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'Category has associated movements: it cannot be modified.',
+    description:
+      'Category has associated movements: it cannot be modified. Also, could be that Category name must be unique among active categories.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: '',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
