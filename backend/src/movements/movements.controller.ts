@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { MovementsService } from './movements.service';
 import { CreateMovementDto, UpdateMovementDto, QueryMovementDto } from './dto';
@@ -19,20 +20,23 @@ export class MovementsController {
 
   @Post()
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Create new Movement',
     type: Movement,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 404, description: 'Category not found' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Category not found',
+  })
   create(@Body() createMovementDto: CreateMovementDto) {
     return this.movementsService.create(createMovementDto);
   }
 
   @Get()
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'List All Movements',
     type: Movement,
   })
@@ -41,9 +45,9 @@ export class MovementsController {
   }
 
   @Get(':id')
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'List One Movement filtered by id',
     type: Movement,
   })

@@ -20,11 +20,10 @@ import { Category } from './entities/category.entity';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  // TODO: Change HTTP STATUS code from numbers to HttpStatus values
   @Get()
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'List of Categories',
     type: [Category],
   })
@@ -32,9 +31,9 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
   @Get(':id')
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'A Category found by id',
     type: Category,
   })
@@ -44,11 +43,11 @@ export class CategoriesController {
 
   @Post()
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Category was created',
     type: Category,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description: 'Category name must be unique among active categories.',
