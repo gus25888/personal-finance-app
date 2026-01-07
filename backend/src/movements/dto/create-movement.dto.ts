@@ -2,7 +2,7 @@ import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
-  // IsDivisibleBy,
+  IsDivisibleBy,
   IsInt,
   IsString,
   Max,
@@ -42,19 +42,18 @@ export class CreateMovementDto {
   @MinDate(MIN_DATE)
   date: Date;
 
-  // TODO: Agregar restricción de múltiplos para amount
   @ApiProperty({
     example: 1500,
     description: 'Movement Amount of the transaction',
     nullable: false,
     minimum: MIN_AMOUNT,
     maximum: MAX_AMOUNT,
-    // multipleOf: 500,
+    multipleOf: 500,
   })
   @IsInt()
   @Min(MIN_AMOUNT)
   @Max(MAX_AMOUNT)
-  // @IsDivisibleBy(500)
+  @IsDivisibleBy(500)
   amount: number;
 
   @ApiProperty({
@@ -62,7 +61,6 @@ export class CreateMovementDto {
     description:
       'Movement Category of the transaction (foreign key of Category table)',
     nullable: false,
-    oneOf: [{ $ref: getSchemaPath(Category) }],
   })
   @IsInt()
   @Min(1)

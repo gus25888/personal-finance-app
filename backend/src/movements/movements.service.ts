@@ -6,6 +6,8 @@ import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryType } from '../categories/constants/categories.constants';
 
+import { CategoryRulesService } from '../category-rules/category-rules.service';
+
 import {
   CreateMovementDto,
   QueryMovementDto,
@@ -30,6 +32,7 @@ export class MovementsService {
     @InjectRepository(Movement)
     private readonly movementsRepository: Repository<Movement>,
     private readonly categoriesService: CategoriesService,
+    private readonly categoryRulesService: CategoryRulesService,
   ) {}
 
   private buildMovementResponse(movement: Movement): ResponseMovementDto {
@@ -46,8 +49,9 @@ export class MovementsService {
 
   async create(createMovementDto: CreateMovementDto) {
     try {
-      const { category } = createMovementDto;
-      const categoryFound = await this.categoriesService.findOne(category);
+      const { category: categoryId } = createMovementDto;
+      const categoryFound =
+        await this.categoryRulesService.getUsableCategory(categoryId);
       const movement = this.movementsRepository.create({
         ...createMovementDto,
         category: categoryFound,
@@ -55,14 +59,7 @@ export class MovementsService {
 
       await this.movementsRepository.save(movement);
 
-      return {
-        ...movement,
-        category: {
-          id: movement.category.id,
-          name: movement.category.name,
-          type: movement.category.type,
-        },
-      };
+      return this.buildMovementResponse(movement);
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }

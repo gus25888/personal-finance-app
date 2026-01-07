@@ -1,7 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { Category } from '../categories/entities/category.entity';
 import { Movement } from '../movements/entities/movement.entity';
 
 @Injectable()
@@ -9,6 +14,8 @@ export class CategoryRulesService {
   constructor(
     @InjectRepository(Movement)
     private readonly movementsRepository: Repository<Movement>,
+    @InjectRepository(Category)
+    private readonly categoriesRepository: Repository<Category>,
   ) {}
 
   private async categoryHasMovements(categoryId: number) {
@@ -38,9 +45,28 @@ export class CategoryRulesService {
 
     return;
   }
-  // TODO: Implementar método para determinar si una categoría es válida para crear / actualizar un movimiento.
-  // assertCategoryIsUsable(categoryId) -> deletedAt === null
 
-  // TODO: Implementar método para determinar si un movimiento va a usar una categoría borrada.
-  // assertCategoryIsNotDeleted(categoryId)
+  private async getCategoryById(categoryId: number) {
+    const category = await this.categoriesRepository.findOneBy({
+      id: categoryId,
+    });
+
+    return category;
+  }
+
+  async getUsableCategory(categoryId: number) {
+    const category = await this.getCategoryById(categoryId);
+
+    if (!category) {
+      throw new NotFoundException(`Category '${categoryId}' not found.`);
+    }
+
+    if (category.deletedAt) {
+      throw new ConflictException(`Category '${categoryId}' has been deleted.`);
+    }
+
+    return category;
+  }
+
+  // TODO: Definir regla para creación de movements por ventana de tiempo. Requiere definición de ENV variable.
 }
