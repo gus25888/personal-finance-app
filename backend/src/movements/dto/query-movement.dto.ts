@@ -51,7 +51,7 @@ export class QueryMovementDto {
   })
   @IsOptional()
   @IsEnum(CategoryType, {
-    message: `"categoryType" must be one of these values: '${Object.values(CategoryType).join("','")}'`,
+    message: `'categoryType' must be one of these values: '${Object.values(CategoryType).join("','")}'`,
   })
   categoryType?: CategoryType;
 }

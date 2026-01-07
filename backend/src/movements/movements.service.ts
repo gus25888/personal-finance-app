@@ -4,8 +4,23 @@ import { Repository } from 'typeorm';
 
 import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
 import { CategoriesService } from '../categories/categories.service';
-import { CreateMovementDto, QueryMovementDto, UpdateMovementDto } from './dto';
+import { CategoryType } from '../categories/constants/categories.constants';
+
+import {
+  CreateMovementDto,
+  QueryMovementDto,
+  UpdateMovementDto,
+  ResponseMovementDto,
+} from './dto';
 import { Movement } from './entities/movement.entity';
+
+type MovementQueryParams = {
+  category?: number;
+  categoryType?: CategoryType;
+  description?: string;
+  fromDate?: Date;
+  toDate?: Date;
+};
 
 @Injectable()
 export class MovementsService {
@@ -16,6 +31,18 @@ export class MovementsService {
     private readonly movementsRepository: Repository<Movement>,
     private readonly categoriesService: CategoriesService,
   ) {}
+
+  private buildMovementResponse(movement: Movement): ResponseMovementDto {
+    return {
+      ...movement,
+      category: {
+        id: movement.category.id,
+        name: movement.category.name,
+        type: movement.category.type,
+        deletedAt: movement.category.deletedAt,
+      },
+    };
+  }
 
   async create(createMovementDto: CreateMovementDto) {
     try {
@@ -42,19 +69,46 @@ export class MovementsService {
   }
 
   async findAll(query: QueryMovementDto) {
-    this.logger.log({ query });
-    const movements = await this.movementsRepository.find({
-      relations: { category: true },
-    });
+    let queryFilter = '1=1';
 
-    return movements.map((movement) => ({
-      ...movement,
-      category: {
-        id: movement.category.id,
-        name: movement.category.name,
-        type: movement.category.type,
-      },
-    }));
+    const where: MovementQueryParams = {};
+
+    if (query.category) {
+      queryFilter += ' and mov.category = :category';
+      where.category = query.category;
+    }
+
+    if (query.categoryType) {
+      queryFilter += ' and category.type = :categoryType';
+      where.categoryType = query.categoryType;
+    }
+
+    // TODO: Agregar regexp para "description", ya que buscaré por partes del texto. Además, que sea case insensitive.
+
+    // Funciona por búsqueda ded texto exacto pero es case insensitive
+    if (query.description) {
+      queryFilter += ' and lower(mov.description) = :description';
+      where.description = query.description.trim().toLocaleLowerCase();
+    }
+
+    if (query.fromDate) {
+      queryFilter += ' and mov.date >= :fromDate';
+      where.fromDate = query.fromDate;
+    }
+
+    if (query.toDate) {
+      queryFilter += ' and mov.date <= :toDate';
+      where.toDate = query.toDate;
+    }
+
+    const movements = await this.movementsRepository
+      .createQueryBuilder('mov')
+      .withDeleted()
+      .leftJoinAndSelect('mov.category', 'category')
+      .where(queryFilter, where)
+      .getMany();
+
+    return movements.map((movement) => this.buildMovementResponse(movement));
   }
 
   async findOne(id: number) {
@@ -67,14 +121,7 @@ export class MovementsService {
       throw new NotFoundException(`Movement '${id}' not found`);
     }
 
-    return {
-      ...movement,
-      category: {
-        id: movement.category.id,
-        name: movement.category.name,
-        type: movement.category.type,
-      },
-    };
+    return this.buildMovementResponse(movement);
   }
 
   update(id: number, updateMovementDto: UpdateMovementDto) {
