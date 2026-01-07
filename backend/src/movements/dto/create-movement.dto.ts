@@ -1,4 +1,4 @@
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -16,7 +16,6 @@ import {
   MIN_AMOUNT,
   MIN_DATE,
 } from '../constants/movements.constants';
-import { Category } from '../../categories/entities/category.entity';
 
 export class CreateMovementDto {
   @ApiProperty({
