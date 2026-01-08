@@ -15,6 +15,7 @@ import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
 
 import { CategoryRulesService } from '../category-rules/category-rules.service';
+import { Movement } from '../movements/entities/movement.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -23,8 +24,16 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Movement)
+    private readonly movementsRepository: Repository<Movement>,
     private readonly categoryRulesService: CategoryRulesService,
   ) {}
+
+  async getCategoryMovementsCount(categoryId: number) {
+    return await this.movementsRepository.countBy({
+      category: { id: categoryId },
+    });
+  }
 
   async getUsableCategory(categoryId: number) {
     const category = await this.categoryRepository.findOneBy({
@@ -70,12 +79,13 @@ export class CategoriesService {
     }
 
     const category = await this.getUsableCategory(id);
+    const movementCount = await this.getCategoryMovementsCount(id);
 
     if (
       updateCategoryDto.type !== undefined &&
       category.type !== updateCategoryDto.type
     ) {
-      await this.categoryRulesService.assertCategoryTypeIsEditable(id);
+      this.categoryRulesService.assertCategoryTypeIsEditable(id, movementCount);
     }
 
     try {
@@ -92,8 +102,12 @@ export class CategoriesService {
 
   async remove(id: number) {
     const category = await this.getUsableCategory(id);
+    const movementCount = await this.getCategoryMovementsCount(id);
 
-    await this.categoryRulesService.assertCategoryIsErasable(category.id);
+    this.categoryRulesService.assertCategoryIsErasable(
+      category.id,
+      movementCount,
+    );
 
     try {
       category.deletedAt = new Date();
