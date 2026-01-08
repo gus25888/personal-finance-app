@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import {
   BadRequestException,
   ConflictException,
@@ -9,9 +10,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
-import { CategoryType } from '../categories/constants/categories.constants';
 
-import { CategoryRulesService } from '../category-rules/category-rules.service';
+import { CategoryType } from '../categories/constants/categories.constants';
+import { CategoriesService } from '../categories/categories.service';
 
 import {
   CreateMovementDto,
@@ -20,7 +21,6 @@ import {
   ResponseMovementDto,
 } from './dto';
 import { Movement } from './entities/movement.entity';
-import { ConfigService } from '@nestjs/config';
 
 type MovementQueryParams = {
   category?: number;
@@ -37,7 +37,7 @@ export class MovementsService {
   constructor(
     @InjectRepository(Movement)
     private readonly movementsRepository: Repository<Movement>,
-    private readonly categoryRulesService: CategoryRulesService,
+    private readonly categoriesService: CategoriesService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -99,7 +99,7 @@ export class MovementsService {
       this.assertValidMovementDate(date);
 
       const categoryFound =
-        await this.categoryRulesService.getUsableCategory(categoryId);
+        await this.categoriesService.getUsableCategory(categoryId);
       const movement = this.movementsRepository.create({
         ...createMovementDto,
         category: categoryFound,
@@ -174,7 +174,7 @@ export class MovementsService {
         ...movement,
         ...updateMovementDto,
         category: updateMovementDto.category
-          ? await this.categoryRulesService.getUsableCategory(
+          ? await this.categoriesService.getUsableCategory(
               updateMovementDto.category,
             )
           : movement.category,

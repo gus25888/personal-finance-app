@@ -1,0 +1,28 @@
+info:
+  name: MOVEMENTS - CREATE
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/movements"
+  body:
+    type: json
+    data: "{\r
+
+      \  \"description\": \"Nuevo Ingreso 2\",\r
+
+      \  \"date\": \"2025-12-19\",\r
+
+      \  \"amount\": 1500,\r
+
+      \  \"category\": 2\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

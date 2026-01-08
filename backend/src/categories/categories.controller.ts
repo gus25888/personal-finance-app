@@ -31,11 +31,19 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
   @Get(':id')
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'A Category found by id',
     type: Category,
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Category is already deleted.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Category was not found.',
   })
   getOne(@Param('id') id: number) {
     return this.categoriesService.findOne(id);
@@ -60,11 +68,7 @@ export class CategoriesController {
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description:
-      'Category has associated movements: it cannot be modified. Also, could be that Category name must be unique among active categories.',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: '',
+      'Category has associated movements: it cannot be modified. Also, could be that Category name must be unique among active categories. Or the Category is already deleted.',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,

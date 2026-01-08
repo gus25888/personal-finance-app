@@ -1,0 +1,18 @@
+meta {
+  name: CATEGORIES - GET ALL
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/categories
+  body: multipartForm
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

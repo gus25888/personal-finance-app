@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 
 import {
+  AMOUNT_INCREMENT,
   MAX_AMOUNT,
   MIN_AMOUNT,
   MIN_DATE,
@@ -49,12 +50,12 @@ export class CreateMovementDto {
     nullable: false,
     minimum: MIN_AMOUNT,
     maximum: MAX_AMOUNT,
-    multipleOf: 500,
+    multipleOf: AMOUNT_INCREMENT,
   })
   @IsInt()
   @Min(MIN_AMOUNT)
   @Max(MAX_AMOUNT)
-  @IsDivisibleBy(500)
+  @IsDivisibleBy(AMOUNT_INCREMENT)
   amount: number;
 
   @ApiProperty({

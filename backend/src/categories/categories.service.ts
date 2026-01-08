@@ -26,6 +26,24 @@ export class CategoriesService {
     private readonly categoryRulesService: CategoryRulesService,
   ) {}
 
+  async getUsableCategory(categoryId: number) {
+    const category = await this.categoryRepository.findOneBy({
+      id: categoryId,
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category '${categoryId}' not found.`);
+    }
+
+    if (category.deletedAt) {
+      throw new ConflictException(
+        `Category '${categoryId}' is already deleted.`,
+      );
+    }
+
+    return category;
+  }
+
   async create(createCategoryDto: CreateCategoryDto) {
     try {
       const category = this.categoryRepository.create(createCategoryDto);
@@ -43,13 +61,7 @@ export class CategoriesService {
   }
 
   async findOne(id: number) {
-    const category = await this.categoryRepository.findOneBy({ id });
-
-    if (!category) {
-      throw new NotFoundException(`Category '${id}' not found`);
-    }
-
-    return category;
+    return await this.getUsableCategory(id);
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
@@ -57,11 +69,7 @@ export class CategoriesService {
       throw new BadRequestException(`Not valid data sent for the update.`);
     }
 
-    const category = await this.findOne(id);
-
-    if (category.deletedAt) {
-      throw new ConflictException(`Category '${id}' is already deleted.`);
-    }
+    const category = await this.getUsableCategory(id);
 
     if (
       updateCategoryDto.type !== undefined &&
@@ -83,11 +91,7 @@ export class CategoriesService {
   }
 
   async remove(id: number) {
-    const category = await this.findOne(id);
-
-    if (category.deletedAt) {
-      throw new ConflictException(`Category '${id}' is already deleted.`);
-    }
+    const category = await this.getUsableCategory(id);
 
     await this.categoryRulesService.assertCategoryIsErasable(category.id);
 

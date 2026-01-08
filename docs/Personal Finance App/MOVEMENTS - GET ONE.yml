@@ -1,0 +1,18 @@
+meta {
+  name: MOVEMENTS - GET ONE
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/movements/1
+  body: multipartForm
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

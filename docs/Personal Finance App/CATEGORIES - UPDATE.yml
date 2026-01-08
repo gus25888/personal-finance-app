@@ -1,0 +1,24 @@
+info:
+  name: CATEGORIES - UPDATE
+  type: http
+  seq: 2
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/categories"
+  body:
+    type: json
+    data: "{\r
+
+      \  \"name\": \"Otros Egresos\",\r
+
+      \  \"type\": \"as\"\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -6,12 +6,14 @@ import { MovementsService } from './movements.service';
 import { MovementsController } from './movements.controller';
 import { Movement } from './entities/movement.entity';
 import { CategoryRulesModule } from '../category-rules/category-rules.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   controllers: [MovementsController],
   providers: [MovementsService],
   imports: [
     TypeOrmModule.forFeature([Movement]),
+    CategoriesModule,
     CategoryRulesModule,
     ConfigModule,
   ],
