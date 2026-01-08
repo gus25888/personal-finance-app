@@ -67,6 +67,4 @@ export class CategoryRulesService {
 
     return category;
   }
-
-  // TODO: Definir regla para creación de movements por ventana de tiempo. Requiere definición de ENV variable.
 }

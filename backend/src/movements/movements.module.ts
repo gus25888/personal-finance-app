@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { MovementsService } from './movements.service';
 import { MovementsController } from './movements.controller';
 import { Movement } from './entities/movement.entity';
-import { CategoriesModule } from '../categories/categories.module';
 import { CategoryRulesModule } from '../category-rules/category-rules.module';
 
 @Module({
@@ -12,8 +12,8 @@ import { CategoryRulesModule } from '../category-rules/category-rules.module';
   providers: [MovementsService],
   imports: [
     TypeOrmModule.forFeature([Movement]),
-    CategoriesModule,
     CategoryRulesModule,
+    ConfigModule,
   ],
   exports: [MovementsService],
 })

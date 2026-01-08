@@ -6,6 +6,7 @@ import {
   IsInt,
   IsString,
   Max,
+  MaxDate,
   Min,
   MinDate,
   MinLength,
@@ -39,6 +40,7 @@ export class CreateMovementDto {
   @Type(() => Date)
   @IsDate()
   @MinDate(MIN_DATE)
+  @MaxDate(new Date())
   date: Date;
 
   @ApiProperty({

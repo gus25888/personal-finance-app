@@ -1,9 +1,14 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { handleDBExceptions } from '../common/exceptions/handle-db-exception';
-import { CategoriesService } from '../categories/categories.service';
 import { CategoryType } from '../categories/constants/categories.constants';
 
 import { CategoryRulesService } from '../category-rules/category-rules.service';
@@ -15,6 +20,7 @@ import {
   ResponseMovementDto,
 } from './dto';
 import { Movement } from './entities/movement.entity';
+import { ConfigService } from '@nestjs/config';
 
 type MovementQueryParams = {
   category?: number;
@@ -31,8 +37,8 @@ export class MovementsService {
   constructor(
     @InjectRepository(Movement)
     private readonly movementsRepository: Repository<Movement>,
-    private readonly categoriesService: CategoriesService,
     private readonly categoryRulesService: CategoryRulesService,
+    private readonly configService: ConfigService,
   ) {}
 
   private buildMovementResponse(movement: Movement): ResponseMovementDto {
@@ -47,9 +53,51 @@ export class MovementsService {
     };
   }
 
+  private async getMovementById(id: number) {
+    const movement = await this.movementsRepository.findOne({
+      where: { id },
+      relations: { category: true },
+    });
+
+    if (!movement) {
+      throw new NotFoundException(`Movement '${id}' not found`);
+    }
+    return movement;
+  }
+
+  private assertValidMovementDate(movementDate: Date) {
+    const now = Date.now();
+    if (movementDate.valueOf() > now) {
+      throw new BadRequestException(
+        `Movement date cannot be after the current day: ${new Date(now).toISOString()}.`,
+      );
+    }
+    return;
+  }
+
+  private assertMovementIsMutable(movement: Movement) {
+    const MOVEMENT_EDIT_WINDOW_DAYS = this.configService.getOrThrow<number>(
+      'MOVEMENT_EDIT_WINDOW_DAYS',
+    );
+    const movementEditWindowInMs =
+      MOVEMENT_EDIT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    const movementDateInMs = movement.date.valueOf();
+
+    if (Date.now() - movementDateInMs > movementEditWindowInMs) {
+      throw new ConflictException(
+        `Movement '${movement.id}' cannot be modified after ${MOVEMENT_EDIT_WINDOW_DAYS} days of its occurrence.`,
+      );
+    }
+
+    return;
+  }
+
   async create(createMovementDto: CreateMovementDto) {
     try {
-      const { category: categoryId } = createMovementDto;
+      const { category: categoryId, date } = createMovementDto;
+
+      this.assertValidMovementDate(date);
+
       const categoryFound =
         await this.categoryRulesService.getUsableCategory(categoryId);
       const movement = this.movementsRepository.create({
@@ -109,23 +157,49 @@ export class MovementsService {
   }
 
   async findOne(id: number) {
-    const movement = await this.movementsRepository.findOne({
-      where: { id },
-      relations: { category: true },
-    });
+    return this.buildMovementResponse(await this.getMovementById(id));
+  }
 
-    if (!movement) {
-      throw new NotFoundException(`Movement '${id}' not found`);
+  async update(id: number, updateMovementDto: UpdateMovementDto) {
+    const movement = await this.getMovementById(id);
+
+    this.assertMovementIsMutable(movement);
+
+    if (updateMovementDto.date) {
+      this.assertValidMovementDate(updateMovementDto.date);
     }
 
-    return this.buildMovementResponse(movement);
+    try {
+      const movementToUpdate = {
+        ...movement,
+        ...updateMovementDto,
+        category: updateMovementDto.category
+          ? await this.categoryRulesService.getUsableCategory(
+              updateMovementDto.category,
+            )
+          : movement.category,
+        updatedAt: new Date(),
+      };
+
+      const movementUpdated =
+        await this.movementsRepository.save(movementToUpdate);
+
+      return this.buildMovementResponse(movementUpdated);
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
   }
 
-  update(id: number, updateMovementDto: UpdateMovementDto) {
-    return `This action updates a #${id} movement`;
-  }
+  async remove(id: number) {
+    const movement = await this.getMovementById(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} movement`;
+    this.assertMovementIsMutable(movement);
+
+    try {
+      await this.movementsRepository.remove(movement);
+    } catch (error) {
+      handleDBExceptions(error, this.logger);
+    }
+    return;
   }
 }
