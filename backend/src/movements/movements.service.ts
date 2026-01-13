@@ -65,31 +65,27 @@ export class MovementsService {
     return movement;
   }
 
-  private assertValidMovementDate(movementDate: Date) {
-    const now = Date.now();
+  private assertValidMovementDate(movementDate: Date, now = Date.now()) {
     if (movementDate.valueOf() > now) {
       throw new BadRequestException(
         `Movement date cannot be after the current day: ${new Date(now).toISOString()}.`,
       );
     }
-    return;
   }
 
-  private assertMovementIsMutable(movement: Movement) {
-    const MOVEMENT_EDIT_WINDOW_DAYS = this.configService.getOrThrow<number>(
-      'MOVEMENT_EDIT_WINDOW_DAYS',
-    );
-    const movementEditWindowInMs =
-      MOVEMENT_EDIT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-    const movementDateInMs = movement.date.valueOf();
+  private assertMovementIsMutable(
+    movementDate: Date,
+    maxMutableDays: number,
+    now = Date.now(),
+  ) {
+    const maxMutableDaysInMs = maxMutableDays * 24 * 60 * 60 * 1000;
+    const movementDaysPassedInMs = now - movementDate.valueOf();
 
-    if (Date.now() - movementDateInMs > movementEditWindowInMs) {
+    if (movementDaysPassedInMs > maxMutableDaysInMs) {
       throw new ConflictException(
-        `Movement '${movement.id}' cannot be modified after ${MOVEMENT_EDIT_WINDOW_DAYS} days of its occurrence.`,
+        `Movement cannot be modified after ${maxMutableDays} days of its occurrence.`,
       );
     }
-
-    return;
   }
 
   async create(createMovementDto: CreateMovementDto) {
@@ -162,8 +158,10 @@ export class MovementsService {
 
   async update(id: number, updateMovementDto: UpdateMovementDto) {
     const movement = await this.getMovementById(id);
-
-    this.assertMovementIsMutable(movement);
+    const maxMutableDays = this.configService.getOrThrow<number>(
+      'MOVEMENT_EDIT_WINDOW_DAYS',
+    );
+    this.assertMovementIsMutable(movement.date, maxMutableDays);
 
     if (updateMovementDto.date) {
       this.assertValidMovementDate(updateMovementDto.date);
@@ -192,8 +190,10 @@ export class MovementsService {
 
   async remove(id: number) {
     const movement = await this.getMovementById(id);
-
-    this.assertMovementIsMutable(movement);
+    const maxMutableDays = this.configService.getOrThrow<number>(
+      'MOVEMENT_EDIT_WINDOW_DAYS',
+    );
+    this.assertMovementIsMutable(movement.date, maxMutableDays);
 
     try {
       await this.movementsRepository.remove(movement);
