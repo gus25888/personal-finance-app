@@ -106,14 +106,71 @@ npm run migrations:revert
 npm run migrations:show
 ```
 
+### Integración con frontend
+
+## Notas de diseño y decisiones arquitectónicas
+
+En esta sección se describen las decisiones tomadas en el proyecto tanto a nivel técnico como de reglas de negocio.
+
+### Decisiones de diseño relevantes
+
+#### Estrategia de testing
+
+El backend cuenta solo con unit testing de la entidad Category, debido a que se consideró como la más "compleja" de las implementadas.
+
+Solo se probaron las funcionalidades más complejas del mismo, a saber:
+
+- Update: Por su uso de múltiples dependencias, uso de reglas de dominio condicionales y manejo de flujos condicionales.
+
+- Delete: Por lo descrito en Update y sumado a la existencia de soft-delete para la entidad.
+
+Movements no fue incluida como parte de las pruebas en el MVP, debido a que no aporta valor didáctico adicional a los tests ya implementados.
+
+#### Separación entre Services y Rules
+
+Categories cuenta con una implementación separada de Rules para la definición de restricciones derivadas de las reglas de negocio definidas para la entidad. Esto fue realizado para poder mantener un orden de las funcionalidades, ya que el Service cuenta con las funcionalidades que realizan manipulación de los datos de la entidad y las Rules determinan si es factible realizar estas acciones dependiendo de los datos.
+
+En el caso de Categories, sus restricciones dependen de si tiene algún movimiento asociado, por lo que realizar la separación permite dejar más claro el objetivo de las reglas definidas, sin mezclar con funcionalidades de otra entidad. Las reglas implementadas corresponden a la posibilidad de cambiar el tipo o de borrar la categoría.
+
+Para Movements, la separación podría ser implementada pero no se realizó debido a que las restricciones definidas no afectan a nada más fuera del service, por lo que no se quiso hacer solo por simplicidad respecto al alcance del MVP.
+
+#### Uso de soft-delete
+
+En el proyecto, Categories hace uso de soft-delete, con el objetivo de poder mantener la consistencia histórica de los datos. En caso de que se evalúe que una Category ya no es relevante o válida, puede ser excluida para nuevos Movements sin afectar a los registros ya creados. Para identificar si una Category fue eliminada, se debe mirar su columna deletedAt: si tiene algún valor registrado, esa Category fue eliminada, es decir, ya no es válida.
+
+Por otro lado, Movements **no** hace uso de soft-delete, sin embargo, tienes otras reglas definidas al respecto.
+
+#### Manejo de fechas y reglas temporales
+
+El registro de información de manipulación de datos (createdAt, updatedAt, deletedAt) usa timestamps para el registro, por razones de conveniencia en el desarrollo.
+
+Las fechas restantes solo consideran el día actual para tomar decisiones. Estas incluyen:
+
+- Días para permitir el borrado / actualización de un registro de Movement.
+- Días mínimos y máximos para definir en la fecha de un Movement.
+
+#### Otras reglas de dominio
+
+Para Movements existen tres reglas definidas que dependen de su amount:
+
+- Mínimo = 500
+- Máximo = 99999999
+- Múltiplo = 500
+
+#### Alcance del MVP y no-objetivos
+
+El MVP incluye la implementación de CRUD de las dos entidades: Categories y Movements. Esta última cuenta con una complejidad un poco mayor en su obtención de múltiples datos, ya que se implementaron filtros tales como:
+
+- Fecha Desde y Fecha Hasta
+- Contenido completo de la descripción
+- Categoría
+- Tipo de Categoría
+
+Lo que se pretende implementar más adelante, incluye la búsqueda de movimientos por partes de la descripción y nuevos endpoints para poder obtener totales por categorías para la implementación de reportes o gráficos.
+
 ## Próximos pasos
 
 Lo que se encuentra después de este punto son elementos que faltan por implementar.
 
-- CRUD completo para Movements y Categories.
 - Integración con frontend
 - Siguientes Epics listadas en `docs/backlog`
-
-### Integración
-
-## Notas sobre estructura del proyecto
