@@ -1,18 +1,18 @@
-meta {
-  name: CATEGORIES - DELETE
-  type: http
-  seq: 5
-}
+info:
+    name: CATEGORIES - DELETE
+    type: http
+    seq: 5
 
-delete {
-  url: {{baseUrl}}/categories/2
-  body: multipartForm
-  auth: inherit
-}
+http:
+    method: DELETE
+    url: "{{baseUrl}}/categories/2"
+    body:
+        type: json
+        data: ""
+    auth: inherit
 
-settings {
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-}
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

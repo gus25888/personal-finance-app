@@ -1,18 +1,18 @@
-meta {
-  name: MOVEMENTS - GET ONE
-  type: http
-  seq: 8
-}
+info:
+    name: MOVEMENTS - GET ONE
+    type: http
+    seq: 8
 
-get {
-  url: {{baseUrl}}/movements/1
-  body: multipartForm
-  auth: inherit
-}
+http:
+    method: GET
+    url: "{{baseUrl}}/movements/1"
+    body:
+        type: json
+        data: ""
+    auth: inherit
 
-settings {
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-}
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

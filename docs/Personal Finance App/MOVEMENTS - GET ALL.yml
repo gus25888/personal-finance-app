@@ -1,26 +1,18 @@
-meta {
-  name: MOVEMENTS - GET ALL
-  type: http
-  seq: 7
-}
+info:
+    name: MOVEMENTS - GET ALL
+    type: http
+    seq: 7
 
-get {
-  url: {{baseUrl}}/movements?category=1&fromDate=2020-05-10&toDate=2025-12-10&description=asdasd
-  body: multipartForm
-  auth: inherit
-}
+http:
+    method: GET
+    url: "{{baseUrl}}/movements?category=1&fromDate=2020-05-10&toDate=2025-12-10&description=asdasd"
+    body:
+        type: json
+        data: ""
+    auth: inherit
 
-params:query {
-  category: 1
-  fromDate: 2020-05-10
-  toDate: 2025-12-10
-  description: asdasd
-  ~categoryType: A
-}
-
-settings {
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-}
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5

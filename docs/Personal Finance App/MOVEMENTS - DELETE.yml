@@ -1,11 +1,11 @@
 info:
-    name: CATEGORIES - GET ONE
+    name: MOVEMENTS - DELETE
     type: http
-    seq: 4
+    seq: 5
 
 http:
-    method: GET
-    url: "{{baseUrl}}/categories/6"
+    method: DELETE
+    url: "{{baseUrl}}/movements/2"
     body:
         type: json
         data: ""
