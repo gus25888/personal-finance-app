@@ -2,7 +2,6 @@ import { apiBaseUrl } from "../config/api";
 
 interface HttpResponse {
     data?: unknown;
-    error?: unknown;
     status: number;
 }
 
@@ -17,10 +16,17 @@ interface FetchOptions {
 }
 
 export class HttpRequestHandler {
+    /**
+     *
+     * @param httpMethod string
+     * @param endpoint string: Endpoint name
+     * @param payload Body of the request
+     * @returns response of type HttpResponse
+     */
     async sendRequest(
         httpMethod: string,
         endpoint: string,
-        payload?: unknown
+        payload?: unknown,
     ): Promise<HttpResponse> {
         let serializedPayload: string;
         const url: string = `${apiBaseUrl}/${endpoint}`;
@@ -44,11 +50,7 @@ export class HttpRequestHandler {
         try {
             const jsonResponse = await response.json();
 
-            if (response.ok) {
-                return { status: response.status, data: jsonResponse };
-            } else {
-                return { status: response.status, error: jsonResponse };
-            }
+            return { status: response.status, data: jsonResponse };
         } catch (error) {
             console.log(error);
             return { status: response.status };
