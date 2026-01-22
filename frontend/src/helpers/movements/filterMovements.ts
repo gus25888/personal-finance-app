@@ -1,31 +1,31 @@
 import {
     CATEGORY_FILTER_ALL,
-    MOVEMENT_TYPE_FILTER,
+    CATEGORY_TYPE_FILTER,
     type CategoryFilter,
     type Movement,
-    type MovementTypeFilter,
+    type CategoryTypeFilter,
 } from "../../types";
 
 export const filterMovements = (
     movements: Movement[],
-    movementType: MovementTypeFilter,
+    movementType: CategoryTypeFilter,
     movementCategory: CategoryFilter,
     movementStartDate: string,
-    movementEndDate: string
+    movementEndDate: string,
 ) => {
     return (
         movements
             // type
             .filter((movement) =>
-                movementType === MOVEMENT_TYPE_FILTER.ALL
+                movementType === CATEGORY_TYPE_FILTER.ALL
                     ? true
-                    : movement.type === movementType
+                    : movement.type === movementType,
             )
             // category
             .filter((movement) =>
                 movementCategory === CATEGORY_FILTER_ALL
                     ? true
-                    : movement.categoryId === movementCategory
+                    : movement.categoryId === movementCategory,
             )
             // start and end date
             .filter((movement) => {

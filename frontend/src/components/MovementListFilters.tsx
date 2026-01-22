@@ -1,17 +1,17 @@
 import type { JSX } from "react";
 import {
     type CategoryFilter,
-    type MovementTypeFilter,
+    type CategoryTypeFilter,
     CATEGORY_FILTER_ALL,
     CATEGORY_FILTER_ALL_LABEL,
-    MOVEMENT_TYPE_FILTER,
-    MOVEMENT_TYPE_FILTER_LABEL,
+    CATEGORY_TYPE_FILTER,
+    CATEGORY_TYPE_FILTER_LABEL,
 } from "../types";
 import { categories } from "../data/categories";
 
 type FiltersProps = {
-    movementType: MovementTypeFilter;
-    setMovementType: React.Dispatch<React.SetStateAction<MovementTypeFilter>>;
+    movementType: CategoryTypeFilter;
+    setMovementType: React.Dispatch<React.SetStateAction<CategoryTypeFilter>>;
     movementCategory: CategoryFilter;
     setMovementCategory: React.Dispatch<React.SetStateAction<CategoryFilter>>;
     movementStartDate: string;
@@ -31,18 +31,18 @@ const MovementListFilters = ({
     setMovementEndDate,
 }: FiltersProps): JSX.Element => {
     const onChangeMovementType = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setMovementType(event.target.value as MovementTypeFilter);
+        setMovementType(event.target.value as CategoryTypeFilter);
 
     const onChangeMovementCategory = (
-        event: React.ChangeEvent<HTMLSelectElement>
+        event: React.ChangeEvent<HTMLSelectElement>,
     ) => setMovementCategory(event.target.value as CategoryFilter);
 
     const onChangeMovementStartDate = (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: React.ChangeEvent<HTMLInputElement>,
     ) => setMovementStartDate(event.target.value);
 
     const onChangeMovementEndDate = (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: React.ChangeEvent<HTMLInputElement>,
     ) => setMovementEndDate(event.target.value);
 
     return (
@@ -52,31 +52,31 @@ const MovementListFilters = ({
                     <input
                         type="radio"
                         name="movementTypeFilter"
-                        value={MOVEMENT_TYPE_FILTER.ALL}
-                        checked={movementType === MOVEMENT_TYPE_FILTER.ALL}
+                        value={CATEGORY_TYPE_FILTER.ALL}
+                        checked={movementType === CATEGORY_TYPE_FILTER.ALL}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.all}
+                    {CATEGORY_TYPE_FILTER_LABEL.all}
                 </label>
                 <label className="radio-option">
                     <input
                         type="radio"
                         name="movementTypeFilter"
-                        value={MOVEMENT_TYPE_FILTER.INCOME}
-                        checked={movementType === MOVEMENT_TYPE_FILTER.INCOME}
+                        value={CATEGORY_TYPE_FILTER.INCOME}
+                        checked={movementType === CATEGORY_TYPE_FILTER.INCOME}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.income}
+                    {CATEGORY_TYPE_FILTER_LABEL.income}
                 </label>
                 <label className="radio-option">
                     <input
                         type="radio"
                         name="movementTypeFilter"
-                        value={MOVEMENT_TYPE_FILTER.EXPENSE}
-                        checked={movementType === MOVEMENT_TYPE_FILTER.EXPENSE}
+                        value={CATEGORY_TYPE_FILTER.EXPENSE}
+                        checked={movementType === CATEGORY_TYPE_FILTER.EXPENSE}
                         onChange={onChangeMovementType}
                     />
-                    {MOVEMENT_TYPE_FILTER_LABEL.expense}
+                    {CATEGORY_TYPE_FILTER_LABEL.expense}
                 </label>
             </div>
 

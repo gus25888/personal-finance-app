@@ -2,11 +2,11 @@ import { useState, type JSX } from "react";
 
 import {
     CATEGORY_FILTER_ALL,
-    MOVEMENT_TYPE_FILTER,
-    MOVEMENT_TYPE_LABEL,
+    CATEGORY_TYPE_FILTER,
+    CATEGORY_TYPE_LABEL,
     type CategoryFilter,
     type Movement,
-    type MovementTypeFilter,
+    type CategoryTypeFilter,
 } from "../types";
 
 import {
@@ -29,8 +29,8 @@ const MovementList = ({
     onRemoveMovement,
     onEditMovement,
 }: Props): JSX.Element => {
-    const [movementType, setMovementType] = useState<MovementTypeFilter>(
-        MOVEMENT_TYPE_FILTER.ALL
+    const [movementType, setMovementType] = useState<CategoryTypeFilter>(
+        CATEGORY_TYPE_FILTER.ALL,
     );
     const [movementCategory, setMovementCategory] =
         useState<CategoryFilter>(CATEGORY_FILTER_ALL);
@@ -43,7 +43,7 @@ const MovementList = ({
         movementType,
         movementCategory,
         movementStartDate,
-        movementEndDate
+        movementEndDate,
     );
 
     const { totalIncome, totalExpense, balance } =
@@ -107,11 +107,11 @@ const MovementList = ({
                             <td className="table-cell table-cell-center">
                                 {getCategoryName(
                                     categories,
-                                    movement.categoryId
+                                    movement.categoryId,
                                 )}
                             </td>
                             <td className="table-cell table-cell-center">
-                                {MOVEMENT_TYPE_LABEL[movement.type]}
+                                {CATEGORY_TYPE_LABEL[movement.type]}
                             </td>
                             <td className="table-cell table-cell-center">
                                 {movement.date}

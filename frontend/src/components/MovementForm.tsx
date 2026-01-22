@@ -1,10 +1,10 @@
 import { useEffect, useState, type JSX } from "react";
 import { categories } from "../data/categories";
 import {
-    MOVEMENT_TYPE,
-    MOVEMENT_TYPE_LABEL,
+    CATEGORY_TYPE,
+    CATEGORY_TYPE_LABEL,
     type Movement,
-    type MovementType,
+    type CategoryType,
     type NewMovement,
 } from "../types";
 
@@ -23,7 +23,7 @@ const MovementForm = ({
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState<string>("");
     const [categoryId, setCategoryId] = useState(categories[0].id);
-    const [type, setType] = useState<MovementType>(MOVEMENT_TYPE.EXPENSE);
+    const [type, setType] = useState<CategoryType>(CATEGORY_TYPE.EXPENSE);
 
     useEffect(() => {
         if (movementToEdit) {
@@ -38,25 +38,25 @@ const MovementForm = ({
             setDescription("");
             setAmount("");
             setCategoryId(categories[0].id);
-            setType(MOVEMENT_TYPE.EXPENSE);
+            setType(CATEGORY_TYPE.EXPENSE);
         }
     }, [movementToEdit]);
 
     const onChangeDate = (event: React.ChangeEvent<HTMLInputElement>) =>
         setDate(event.target.value);
     const onChangeDescription = (
-        event: React.ChangeEvent<HTMLTextAreaElement>
+        event: React.ChangeEvent<HTMLTextAreaElement>,
     ) => setDescription(event.target.value.trim());
     const onChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) =>
         setAmount(
             event.target.value === "" || isNaN(Number(event.target.value))
                 ? ""
-                : event.target.value
+                : event.target.value,
         );
     const onChangeCategoryId = (event: React.ChangeEvent<HTMLSelectElement>) =>
         setCategoryId(Number(event.target.value));
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setType(event.target.value as MovementType);
+        setType(event.target.value as CategoryType);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -110,22 +110,22 @@ const MovementForm = ({
                             type="radio"
                             id="movementType1"
                             name="type"
-                            value={MOVEMENT_TYPE.INCOME}
-                            checked={type === MOVEMENT_TYPE.INCOME}
+                            value={CATEGORY_TYPE.INCOME}
+                            checked={type === CATEGORY_TYPE.INCOME}
                             onChange={onChangeType}
                         />
-                        {MOVEMENT_TYPE_LABEL.income}
+                        {CATEGORY_TYPE_LABEL.income}
                     </label>
                     <label className="radio-option">
                         <input
                             type="radio"
                             id="movementType2"
                             name="type"
-                            value={MOVEMENT_TYPE.EXPENSE}
-                            checked={type === MOVEMENT_TYPE.EXPENSE}
+                            value={CATEGORY_TYPE.EXPENSE}
+                            checked={type === CATEGORY_TYPE.EXPENSE}
                             onChange={onChangeType}
                         />
-                        {MOVEMENT_TYPE_LABEL.expense}
+                        {CATEGORY_TYPE_LABEL.expense}
                     </label>
                 </div>
                 <div className="form-group">

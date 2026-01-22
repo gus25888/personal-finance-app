@@ -1,41 +1,28 @@
-/** MOVEMENT CONSTANTS AND TYPES */
-export const MOVEMENT_TYPE = {
+/** CATEGORY CONSTANTS AND TYPES */
+export const CATEGORY_TYPE = {
     INCOME: "income",
     EXPENSE: "expense",
 } as const;
 
-export const MOVEMENT_TYPE_FILTER = {
-    ...MOVEMENT_TYPE,
+export const CATEGORY_TYPE_FILTER = {
+    ...CATEGORY_TYPE,
     ALL: "all",
 } as const;
 
-export const MOVEMENT_TYPE_LABEL = {
+export const CATEGORY_TYPE_LABEL = {
     income: "Income",
     expense: "Expense",
 } as const;
 
-export const MOVEMENT_TYPE_FILTER_LABEL = {
-    ...MOVEMENT_TYPE_LABEL,
+export const CATEGORY_TYPE_FILTER_LABEL = {
+    ...CATEGORY_TYPE_LABEL,
     all: "All",
 } as const;
 
-export type MovementType = (typeof MOVEMENT_TYPE)[keyof typeof MOVEMENT_TYPE];
+export type CategoryType = (typeof CATEGORY_TYPE)[keyof typeof CATEGORY_TYPE];
 
-export type MovementTypeFilter =
-    (typeof MOVEMENT_TYPE_FILTER)[keyof typeof MOVEMENT_TYPE_FILTER];
-
-export type Movement = {
-    id: number;
-    date: string;
-    description: string;
-    amount: number;
-    categoryId: Category["id"];
-    type: MovementType;
-};
-
-export type NewMovement = Omit<Movement, "id">;
-
-/** CATEGORY CONSTANTS AND TYPES */
+export type CategoryTypeFilter =
+    (typeof CATEGORY_TYPE_FILTER)[keyof typeof CATEGORY_TYPE_FILTER];
 
 export type Category = {
     id: number;
@@ -46,3 +33,15 @@ export type CategoryFilter = Category["id"] | typeof CATEGORY_FILTER_ALL;
 
 export const CATEGORY_FILTER_ALL = "all" as const;
 export const CATEGORY_FILTER_ALL_LABEL = "All Categories" as const;
+
+/** MOVEMENT CONSTANTS AND TYPES */
+export type Movement = {
+    id: number;
+    date: string;
+    description: string;
+    amount: number;
+    categoryId: Category["id"];
+    type: CategoryType;
+};
+
+export type NewMovement = Omit<Movement, "id">;
