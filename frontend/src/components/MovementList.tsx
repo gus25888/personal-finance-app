@@ -1,4 +1,4 @@
-import { useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 
 import {
     CATEGORY_FILTER_ALL,
@@ -7,25 +7,21 @@ import {
     type CategoryFilter,
     type Movement,
     type CategoryTypeFilter,
+    type CategoryType,
 } from "../types";
 
-import {
-    filterMovements,
-    calculateTotals,
-    getCategoryName,
-} from "../helpers/movements/";
+import { calculateTotals, getCategoryName } from "../helpers/movements/";
 
 import MovementListFilters from "./MovementListFilters";
 import { categories } from "../data/categories";
+import { movementsService } from "../domain/movements";
 
 type Props = {
-    movements: Movement[];
     onRemoveMovement: (id: number) => void;
     onEditMovement: (movement: Movement) => void;
 };
 
 const MovementList = ({
-    movements,
     onRemoveMovement,
     onEditMovement,
 }: Props): JSX.Element => {
@@ -34,20 +30,59 @@ const MovementList = ({
     );
     const [movementCategory, setMovementCategory] =
         useState<CategoryFilter>(CATEGORY_FILTER_ALL);
-
     const [movementStartDate, setMovementStartDate] = useState<string>("");
     const [movementEndDate, setMovementEndDate] = useState<string>("");
 
-    const filteredMovements = filterMovements(
-        movements,
-        movementType,
-        movementCategory,
-        movementStartDate,
-        movementEndDate,
-    );
+    const [movements, setMovements] = useState<Movement[]>([]);
 
-    const { totalIncome, totalExpense, balance } =
-        calculateTotals(filteredMovements);
+    const [stateLoadingMovements, setStateLoadingMovements] =
+        useState<boolean>(false);
+    const [errorLoadingMovements, setErrorLoadingMovements] = useState<
+        string | null
+    >(null);
+
+    useEffect(() => {
+        const fetchMovements = async (
+            movementType: CategoryType | typeof CATEGORY_TYPE_FILTER.ALL,
+            movementCategory: number | typeof CATEGORY_FILTER_ALL,
+            movementStartDate: string,
+            movementEndDate: string,
+        ) => {
+            setStateLoadingMovements(true);
+            setErrorLoadingMovements(null);
+
+            const filters = {
+                startDate: movementStartDate || undefined,
+                endDate: movementEndDate || undefined,
+                categoryID:
+                    movementCategory === CATEGORY_FILTER_ALL
+                        ? undefined
+                        : movementCategory,
+                categoryType:
+                    movementType === CATEGORY_TYPE_FILTER.ALL
+                        ? undefined
+                        : movementType,
+            };
+
+            const result = await movementsService.getMovements(filters);
+
+            if (result.success) {
+                setMovements(result.data ?? []);
+            } else {
+                setErrorLoadingMovements(result.error ?? "Error desconocido");
+            }
+            setStateLoadingMovements(false);
+        };
+
+        fetchMovements(
+            movementType,
+            movementCategory,
+            movementStartDate,
+            movementEndDate,
+        );
+    }, [movementType, movementCategory, movementStartDate, movementEndDate]);
+
+    const { totalIncome, totalExpense, balance } = calculateTotals(movements);
 
     return (
         <section className="table-section">
@@ -80,7 +115,7 @@ const MovementList = ({
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredMovements.map((movement) => (
+                    {movements.map((movement) => (
                         <tr key={movement.id} className="table-row">
                             <td className="table-cell table-cell-center">
                                 <button

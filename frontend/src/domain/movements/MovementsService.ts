@@ -63,7 +63,7 @@ export class MovementsService {
         try {
             const response = await this.requestHandler.sendRequest(
                 "GET",
-                `/movements${formattedFilter ? "?" + formattedFilter : ""}`,
+                `movements${formattedFilter ? "?" + formattedFilter : ""}`,
             );
             // Normalizar el resultado o error
             // Retornar el resultado normalizado

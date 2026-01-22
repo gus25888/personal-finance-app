@@ -2,12 +2,13 @@ import "./App.css";
 
 import { useState, type JSX } from "react";
 
-import type { Movement, NewMovement } from "./types";
+// import type { Movement, NewMovement } from "./types";
+import type { Movement } from "./types";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
 
 function App(): JSX.Element {
-    const [movements, setMovements] = useState<Movement[]>([]);
+    /*
     const [nextId, setNextId] = useState(1);
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
@@ -39,8 +40,23 @@ function App(): JSX.Element {
         });
         setMovementBeingEdited(null);
     };
+*/
+    const [movementBeingEdited, setMovementBeingEdited] =
+        useState<Movement | null>(null);
 
-    console.log(movements);
+    const defineMovementToEdit = (movement: Movement) => {
+        setMovementBeingEdited(movement);
+    };
+
+    const addMovement = () => {
+        console.log("addMovement");
+    };
+    const removeMovement = () => {
+        console.log("removeMovement");
+    };
+    const editMovement = () => {
+        console.log("editMovement");
+    };
 
     return (
         <div className="app-container">
@@ -51,7 +67,6 @@ function App(): JSX.Element {
                 movementToEdit={movementBeingEdited}
             />
             <MovementList
-                movements={movements}
                 onRemoveMovement={removeMovement}
                 onEditMovement={defineMovementToEdit}
             />
