@@ -6,6 +6,8 @@ import { CATEGORY_TYPE, type Movement, type MovementFilter } from "./types";
 import { getMovementsFilter } from "../../mappers/movements/movementsFilterMapper";
 import { mapMovementsResponse } from "../../mappers/movements/mapMovementsResponse";
 import type { BackendMovement } from "../../mappers/movements/types";
+import type { NewMovement } from "../../types";
+import { mapNewMovementRequest } from "../../mappers/movements/mapNewMovementRequest";
 
 export class MovementsService {
     private requestHandler: HttpRequestHandler;
@@ -105,6 +107,45 @@ export class MovementsService {
                 `${this.endpoint}/${id}`,
             );
             if (response.status === 200) {
+                return {
+                    success: true,
+                    data: mapMovementsResponse(
+                        response.data as BackendMovement,
+                    ),
+                };
+            } else {
+                return {
+                    success: false,
+                    error: response.data as string,
+                };
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return {
+                    success: false,
+                    error: error.message,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "Ha ocurrido un problema en la solicitud",
+                };
+            }
+        }
+    }
+
+    async createMovement(
+        movement: NewMovement,
+    ): Promise<ServiceResult<Movement>> {
+        const movementToCreate = mapNewMovementRequest(movement);
+
+        try {
+            const response = await this.requestHandler.sendRequest(
+                "POST",
+                `${this.endpoint}`,
+                movementToCreate,
+            );
+            if (response.status === 201) {
                 return {
                     success: true,
                     data: mapMovementsResponse(
