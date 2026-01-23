@@ -9,6 +9,7 @@ import type { BackendMovement } from "../../mappers/movements/types";
 
 export class MovementsService {
     private requestHandler: HttpRequestHandler;
+    private endpoint = "movements";
 
     constructor(requestHandler: HttpRequestHandler) {
         this.requestHandler = requestHandler;
@@ -63,15 +64,51 @@ export class MovementsService {
         try {
             const response = await this.requestHandler.sendRequest(
                 "GET",
-                `movements${formattedFilter ? "?" + formattedFilter : ""}`,
+                `${this.endpoint}${formattedFilter ? "?" + formattedFilter : ""}`,
             );
             // Normalizar el resultado o error
             // Retornar el resultado normalizado
             if (response.status === 200) {
+                const responseData = response.data as BackendMovement[];
+
+                return {
+                    success: true,
+                    data: responseData.map((item) =>
+                        mapMovementsResponse(item),
+                    ),
+                };
+            } else {
+                return {
+                    success: false,
+                    error: response.data as string,
+                };
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                return {
+                    success: false,
+                    error: error.message,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "Ha ocurrido un problema en la solicitud",
+                };
+            }
+        }
+    }
+
+    async getMovementById(id: number): Promise<ServiceResult<Movement>> {
+        try {
+            const response = await this.requestHandler.sendRequest(
+                "GET",
+                `${this.endpoint}/${id}`,
+            );
+            if (response.status === 200) {
                 return {
                     success: true,
                     data: mapMovementsResponse(
-                        response.data as BackendMovement[],
+                        response.data as BackendMovement,
                     ),
                 };
             } else {
