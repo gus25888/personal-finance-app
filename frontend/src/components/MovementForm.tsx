@@ -7,10 +7,12 @@ import {
     type CategoryType,
     type NewMovement,
 } from "../types";
+import type { ServiceResult } from "../domain/common/ServiceResult";
+import { formatBackendError } from "../helpers/common/formatBackendErrors";
 
 type Props = {
     movementToEdit: Movement | null;
-    onAddMovement: (movement: NewMovement) => void;
+    onAddMovement: (movement: NewMovement) => Promise<ServiceResult<Movement>>;
     onEditMovement: (movement: Movement) => void;
 };
 
@@ -25,6 +27,14 @@ const MovementForm = ({
     const [categoryId, setCategoryId] = useState(categories[0].id);
     const [type, setType] = useState<CategoryType>(CATEGORY_TYPE.EXPENSE);
 
+    const resetForm = () => {
+        setDate("");
+        setDescription("");
+        setAmount("");
+        setCategoryId(categories[0].id);
+        setType(CATEGORY_TYPE.EXPENSE);
+    };
+
     useEffect(() => {
         if (movementToEdit) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -34,11 +44,7 @@ const MovementForm = ({
             setCategoryId(movementToEdit.categoryId);
             setType(movementToEdit.type);
         } else {
-            setDate("");
-            setDescription("");
-            setAmount("");
-            setCategoryId(categories[0].id);
-            setType(CATEGORY_TYPE.EXPENSE);
+            resetForm();
         }
     }, [movementToEdit]);
 
@@ -46,7 +52,7 @@ const MovementForm = ({
         setDate(event.target.value);
     const onChangeDescription = (
         event: React.ChangeEvent<HTMLTextAreaElement>,
-    ) => setDescription(event.target.value.trim());
+    ) => setDescription(event.target.value);
     const onChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) =>
         setAmount(
             event.target.value === "" || isNaN(Number(event.target.value))
@@ -58,14 +64,16 @@ const MovementForm = ({
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
         setType(event.target.value as CategoryType);
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+
+        const cleanedDescription = description.trim();
 
         if (!date) {
             alert("La fecha es un valor requerido");
             return;
         }
-        if (description.length < 1) {
+        if (cleanedDescription.length < 1) {
             alert("La descripción es un valor requerido");
             return;
         }
@@ -78,7 +86,7 @@ const MovementForm = ({
             const editedMovement: Movement = {
                 ...movementToEdit,
                 date,
-                description,
+                description: cleanedDescription,
                 amount: Number(amount),
                 categoryId,
                 type,
@@ -88,16 +96,23 @@ const MovementForm = ({
         } else {
             const newMovement: NewMovement = {
                 date,
-                description,
+                description: cleanedDescription,
                 amount: Number(amount),
                 categoryId,
                 type,
             };
 
-            onAddMovement(newMovement);
-        }
+            const result = await onAddMovement(newMovement);
 
-        alert("Registro guardado correctamente");
+            if (result.success) {
+                resetForm();
+                alert("Registro creado correctamente");
+            } else {
+                const message = formatBackendError(result.error);
+
+                alert(`Error: ${message}`);
+            }
+        }
     };
 
     return (

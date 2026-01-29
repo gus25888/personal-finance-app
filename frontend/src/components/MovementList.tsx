@@ -8,22 +8,31 @@ import {
     type Movement,
     type CategoryTypeFilter,
     type CategoryType,
+    type NewMovement,
 } from "../types";
 
 import { calculateTotals, getCategoryName } from "../helpers/movements/";
+import { formatBackendError } from "../helpers/common/formatBackendErrors";
 
 import MovementListFilters from "./MovementListFilters";
 import { categories } from "../data/categories";
 import { movementsService } from "../domain/movements";
+import type { ServiceResult } from "../domain/common/ServiceResult";
 
 type Props = {
     onRemoveMovement: (id: number) => void;
     onEditMovement: (movement: Movement) => void;
+    registerCreateMovement: (
+        fn: (movement: NewMovement) => Promise<ServiceResult<Movement>>,
+    ) => void;
 };
+
+const DEFAULT_ERROR = "Unknown Error";
 
 const MovementList = ({
     onRemoveMovement,
     onEditMovement,
+    registerCreateMovement,
 }: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<CategoryTypeFilter>(
         CATEGORY_TYPE_FILTER.ALL,
@@ -41,6 +50,57 @@ const MovementList = ({
         string | null
     >(null);
 
+    const createMovement = async (
+        movement: NewMovement,
+    ): Promise<ServiceResult<Movement>> => {
+        setStateLoadingMovements(true);
+        setErrorLoadingMovements(null);
+
+        try {
+            const result = await movementsService.createMovement(movement);
+
+            if (!result.success) {
+                const message = formatBackendError(result.error);
+
+                setErrorLoadingMovements(message);
+
+                return {
+                    success: false,
+                    error: result.error,
+                };
+            }
+
+            const movementCreated = result.data;
+
+            setMovements((prevState) => [...prevState, movementCreated]);
+
+            return {
+                success: true,
+                data: movementCreated,
+            };
+        } catch (error: unknown) {
+            const err = typeof error === "string" ? error : DEFAULT_ERROR;
+
+            setErrorLoadingMovements(err);
+            return {
+                success: false,
+                error: {
+                    error: DEFAULT_ERROR,
+                    message: err,
+                    statusCode: 400,
+                },
+            };
+        } finally {
+            setStateLoadingMovements(false);
+        }
+    };
+
+    /* Registro de función para crear  */
+    useEffect(() => {
+        registerCreateMovement(createMovement);
+    }, [registerCreateMovement]);
+
+    /* Obtención de datos de Movements */
     useEffect(() => {
         const fetchMovements = async (
             movementType: CategoryType | typeof CATEGORY_TYPE_FILTER.ALL,
@@ -69,7 +129,7 @@ const MovementList = ({
             if (result.success) {
                 setMovements(result.data ?? []);
             } else {
-                setErrorLoadingMovements(result.error ?? "Error desconocido");
+                setErrorLoadingMovements(formatBackendError(result.error));
             }
             setStateLoadingMovements(false);
         };

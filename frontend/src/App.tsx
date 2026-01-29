@@ -1,28 +1,16 @@
 import "./App.css";
 
-import { useState, type JSX } from "react";
+import { useRef, useState, type JSX } from "react";
 
-// import type { Movement, NewMovement } from "./types";
-import type { Movement } from "./types";
+import type { Movement, NewMovement } from "./types";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
+import type { ServiceResult } from "./domain/common/ServiceResult";
 
 function App(): JSX.Element {
     /*
-    const [nextId, setNextId] = useState(1);
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
-
-    const addMovement = (movement: NewMovement) => {
-        setMovements((prev) => [
-            ...prev,
-            {
-                id: nextId,
-                ...movement,
-            },
-        ]);
-        setNextId(nextId + 1);
-    };
 
     const removeMovement = (id: Movement["id"]) => {
         setMovements((mov) => mov.filter((m) => m.id !== id));
@@ -48,12 +36,32 @@ function App(): JSX.Element {
         setMovementBeingEdited(movement);
     };
 
-    const addMovement = () => {
-        console.log("addMovement");
+    const createMovementRef =
+        useRef<(movement: NewMovement) => Promise<ServiceResult<Movement>>>(
+            null,
+        );
+
+    const addMovement = async (
+        movement: NewMovement,
+    ): Promise<ServiceResult<Movement>> => {
+        if (!createMovementRef.current) {
+            return {
+                success: false,
+                error: {
+                    error: "FrontEnd",
+                    message: "Create movement not initialized",
+                    statusCode: 400,
+                },
+            };
+        }
+
+        return await createMovementRef.current(movement);
     };
+
     const removeMovement = () => {
         console.log("removeMovement");
     };
+
     const editMovement = () => {
         console.log("editMovement");
     };
@@ -62,13 +70,16 @@ function App(): JSX.Element {
         <div className="app-container">
             <h1 className="app-title">Personal Finances</h1>
             <MovementForm
+                movementToEdit={movementBeingEdited}
                 onAddMovement={addMovement}
                 onEditMovement={editMovement}
-                movementToEdit={movementBeingEdited}
             />
             <MovementList
                 onRemoveMovement={removeMovement}
                 onEditMovement={defineMovementToEdit}
+                registerCreateMovement={(fn) => {
+                    createMovementRef.current = fn;
+                }}
             />
         </div>
     );

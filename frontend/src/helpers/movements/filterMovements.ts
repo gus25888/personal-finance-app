@@ -6,6 +6,7 @@ import {
     type CategoryTypeFilter,
 } from "../../types";
 
+// TODO: Remove this file
 export const filterMovements = (
     movements: Movement[],
     movementType: CategoryTypeFilter,

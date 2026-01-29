@@ -1,5 +1,5 @@
-export type ServiceResult<T> = {
-    success: boolean;
-    data?: T;
-    error?: string;
-};
+import type { BackendError } from "./BackendError";
+
+export type ServiceResult<T> =
+    | { success: true; data: T }
+    | { success: false; error: BackendError };

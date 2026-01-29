@@ -17,6 +17,7 @@ export class MovementsService {
         this.requestHandler = requestHandler;
     }
 
+    // TODO: Revisar consistencia de ServiceResult en métodos GET
     async getMovements(
         filters: MovementFilter,
     ): Promise<ServiceResult<Movement[]>> {
@@ -155,19 +156,31 @@ export class MovementsService {
             } else {
                 return {
                     success: false,
-                    error: response.data as string,
+                    error: {
+                        error: "Unknown Error",
+                        message: response.data as string,
+                        statusCode: response.status,
+                    },
                 };
             }
         } catch (error) {
             if (error instanceof Error) {
                 return {
                     success: false,
-                    error: error.message,
+                    error: {
+                        error: "Unknown Error",
+                        message: error.message as string,
+                        statusCode: 500,
+                    },
                 };
             } else {
                 return {
                     success: false,
-                    error: "Ha ocurrido un problema en la solicitud",
+                    error: {
+                        error: "Unknown Error",
+                        message: "Ha ocurrido un problema en la solicitud",
+                        statusCode: 500,
+                    },
                 };
             }
         }
