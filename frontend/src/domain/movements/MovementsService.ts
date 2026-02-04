@@ -8,6 +8,7 @@ import { mapMovementsResponse } from "../../mappers/movements/mapMovementsRespon
 import type { BackendMovement } from "../../mappers/movements/types";
 import type { NewMovement } from "../../types";
 import { mapNewMovementRequest } from "../../mappers/movements/mapNewMovementRequest";
+import { mapEditMovementRequest } from "../../mappers/movements/mapEditMovementRequest";
 
 export class MovementsService {
     private requestHandler: HttpRequestHandler;
@@ -157,7 +158,7 @@ export class MovementsService {
                 return {
                     success: false,
                     error: {
-                        error: "Unknown Error",
+                        error: "Request Error",
                         message: response.data as string,
                         statusCode: response.status,
                     },
@@ -168,7 +169,7 @@ export class MovementsService {
                 return {
                     success: false,
                     error: {
-                        error: "Unknown Error",
+                        error: "Request Error",
                         message: error.message as string,
                         statusCode: 500,
                     },
@@ -177,12 +178,56 @@ export class MovementsService {
                 return {
                     success: false,
                     error: {
-                        error: "Unknown Error",
+                        error: "Request Error",
                         message: "Ha ocurrido un problema en la solicitud",
                         statusCode: 500,
                     },
                 };
             }
+        }
+    }
+
+    async updateMovement(
+        id: number,
+        movementChanges: Partial<Movement>,
+    ): Promise<ServiceResult<Movement>> {
+        const movementToUpdate = mapEditMovementRequest(movementChanges);
+
+        try {
+            const response = await this.requestHandler.sendRequest(
+                "PATCH",
+                `${this.endpoint}/${id}`,
+                movementToUpdate,
+            );
+            if (response.status === 200) {
+                return {
+                    success: true,
+                    data: mapMovementsResponse(
+                        response.data as BackendMovement,
+                    ),
+                };
+            } else {
+                return {
+                    success: false,
+                    error: {
+                        error: "Request Error",
+                        message: response.data as string,
+                        statusCode: response.status,
+                    },
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: {
+                    error: "Request Error",
+                    message:
+                        error instanceof Error
+                            ? (error.message as string)
+                            : "Ha ocurrido un problema en la solicitud",
+                    statusCode: 500,
+                },
+            };
         }
     }
 }

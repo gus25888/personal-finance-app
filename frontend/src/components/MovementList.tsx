@@ -22,17 +22,27 @@ import type { ServiceResult } from "../domain/common/ServiceResult";
 type Props = {
     onRemoveMovement: (id: number) => void;
     onEditMovement: (movement: Movement) => void;
+    onClearEditMovement: () => void;
     registerCreateMovement: (
         fn: (movement: NewMovement) => Promise<ServiceResult<Movement>>,
     ) => void;
+    registerEditMovement: (
+        fn: (
+            id: number,
+            movement: Partial<Movement>,
+        ) => Promise<ServiceResult<Movement>>,
+    ) => void;
 };
 
+// TODO: Cambiar el default error por algo más util
 const DEFAULT_ERROR = "Unknown Error";
 
 const MovementList = ({
     onRemoveMovement,
     onEditMovement,
+    onClearEditMovement,
     registerCreateMovement,
+    registerEditMovement,
 }: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<CategoryTypeFilter>(
         CATEGORY_TYPE_FILTER.ALL,
@@ -95,10 +105,68 @@ const MovementList = ({
         }
     };
 
+    const updateMovement = async (
+        id: number,
+        movement: Partial<Movement>,
+    ): Promise<ServiceResult<Movement>> => {
+        setStateLoadingMovements(true);
+        setErrorLoadingMovements(null);
+
+        try {
+            const result = await movementsService.updateMovement(id, movement);
+
+            if (!result.success) {
+                const message = formatBackendError(result.error);
+
+                setErrorLoadingMovements(message);
+
+                return {
+                    success: false,
+                    error: result.error,
+                };
+            }
+
+            const movementUpdated = result.data;
+
+            setMovements((prevState) =>
+                prevState.map((prev) =>
+                    prev.id === movementUpdated.id ? movementUpdated : prev,
+                ),
+            );
+
+            // Se limpia el movimiento que estaba en edición para "refrescar" el formulario.
+            onClearEditMovement();
+
+            return {
+                success: true,
+                data: movementUpdated,
+            };
+        } catch (error: unknown) {
+            const err = typeof error === "string" ? error : DEFAULT_ERROR;
+
+            setErrorLoadingMovements(err);
+            return {
+                success: false,
+                error: {
+                    error: DEFAULT_ERROR,
+                    message: err,
+                    statusCode: 400,
+                },
+            };
+        } finally {
+            setStateLoadingMovements(false);
+        }
+    };
+
     /* Registro de función para crear  */
     useEffect(() => {
         registerCreateMovement(createMovement);
     }, [registerCreateMovement]);
+
+    /* Registro de función para editar  */
+    useEffect(() => {
+        registerEditMovement(updateMovement);
+    }, [registerEditMovement]);
 
     /* Obtención de datos de Movements */
     useEffect(() => {
@@ -196,7 +264,7 @@ const MovementList = ({
                                         onEditMovement(movement);
                                     }}
                                 >
-                                    X
+                                    E
                                 </button>
                             </td>
                             <td className="table-cell table-cell-center">

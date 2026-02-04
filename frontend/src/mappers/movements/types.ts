@@ -19,3 +19,10 @@ export type BackendNewMovement = {
     amount: number;
     category: number;
 };
+
+export type BackendEditMovement = {
+    description?: string;
+    date?: string;
+    amount?: number;
+    category?: number;
+};

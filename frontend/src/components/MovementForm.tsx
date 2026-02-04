@@ -13,13 +13,18 @@ import { formatBackendError } from "../helpers/common/formatBackendErrors";
 type Props = {
     movementToEdit: Movement | null;
     onAddMovement: (movement: NewMovement) => Promise<ServiceResult<Movement>>;
-    onEditMovement: (movement: Movement) => void;
+    onEditMovement: (
+        id: number,
+        movement: Partial<Movement>,
+    ) => Promise<ServiceResult<Movement>>;
+    onClearEditMovement: () => void;
 };
 
 const MovementForm = ({
     movementToEdit,
     onAddMovement,
     onEditMovement,
+    onClearEditMovement,
 }: Props): JSX.Element => {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
@@ -64,6 +69,11 @@ const MovementForm = ({
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
         setType(event.target.value as CategoryType);
 
+    const cancelEdition = () => {
+        resetForm();
+        onClearEditMovement();
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -92,7 +102,19 @@ const MovementForm = ({
                 type,
             };
 
-            onEditMovement(editedMovement);
+            const result = await onEditMovement(
+                movementToEdit.id,
+                editedMovement,
+            );
+
+            if (result.success) {
+                resetForm();
+                alert("Registro modificado correctamente");
+            } else {
+                const message = formatBackendError(result.error);
+
+                alert(`Error: ${message}`);
+            }
         } else {
             const newMovement: NewMovement = {
                 date,
@@ -205,10 +227,19 @@ const MovementForm = ({
                 </div>
                 <button
                     type="submit"
-                    className={`form-button ${movementToEdit ? "editing" : ""}`}
+                    className={`form-button ${movementToEdit ? "editing" : "creating"}`}
                 >
                     {movementToEdit ? "Update Movement" : "Save Movement"}
                 </button>
+                {movementToEdit && (
+                    <button
+                        type="button"
+                        className={`form-button`}
+                        onClick={cancelEdition}
+                    >
+                        Cancel
+                    </button>
+                )}
             </form>
         </div>
     );

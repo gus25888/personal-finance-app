@@ -9,31 +9,18 @@ import type { ServiceResult } from "./domain/common/ServiceResult";
 
 function App(): JSX.Element {
     /*
-    const [movementBeingEdited, setMovementBeingEdited] =
-        useState<Movement | null>(null);
-
     const removeMovement = (id: Movement["id"]) => {
         setMovements((mov) => mov.filter((m) => m.id !== id));
     };
-
-    const defineMovementToEdit = (movement: Movement) => {
-        setMovementBeingEdited(movement);
-    };
-
-    const editMovement = (movementBeingEdited: Movement) => {
-        setMovements((prev) => {
-            return prev.map((mov) =>
-                mov.id === movementBeingEdited.id ? movementBeingEdited : mov
-            );
-        });
-        setMovementBeingEdited(null);
-    };
-*/
+    */
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
 
     const defineMovementToEdit = (movement: Movement) => {
         setMovementBeingEdited(movement);
+    };
+    const clearMovementToEdit = () => {
+        setMovementBeingEdited(null);
     };
 
     const createMovementRef =
@@ -62,8 +49,30 @@ function App(): JSX.Element {
         console.log("removeMovement");
     };
 
-    const editMovement = () => {
-        console.log("editMovement");
+    const editMovementRef =
+        useRef<
+            (
+                id: number,
+                movement: Partial<Movement>,
+            ) => Promise<ServiceResult<Movement>>
+        >(null);
+
+    const editMovement = async (
+        id: number,
+        movement: Partial<Movement>,
+    ): Promise<ServiceResult<Movement>> => {
+        if (!editMovementRef.current) {
+            return {
+                success: false,
+                error: {
+                    error: "FrontEnd",
+                    message: "Edit movement not initialized",
+                    statusCode: 400,
+                },
+            };
+        }
+
+        return await editMovementRef.current(id, movement);
     };
 
     return (
@@ -73,12 +82,17 @@ function App(): JSX.Element {
                 movementToEdit={movementBeingEdited}
                 onAddMovement={addMovement}
                 onEditMovement={editMovement}
+                onClearEditMovement={clearMovementToEdit}
             />
             <MovementList
                 onRemoveMovement={removeMovement}
                 onEditMovement={defineMovementToEdit}
+                onClearEditMovement={clearMovementToEdit}
                 registerCreateMovement={(fn) => {
                     createMovementRef.current = fn;
+                }}
+                registerEditMovement={(fn) => {
+                    editMovementRef.current = fn;
                 }}
             />
         </div>

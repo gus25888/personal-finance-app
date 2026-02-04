@@ -84,19 +84,31 @@ body {
 
 
 .form-button {
-  background-color: rgb(11, 216, 11);
-  border: 1px rgb(0, 70, 20) solid;
+  background-color: rgb(172, 174, 172);
+  border: 1px rgba(71, 71, 71) solid;
   margin: 5px;
   width: fit-content;
   padding: 10px;
   border-radius: 5px;
-  color: rgb(0, 70, 20);
+  color: rgb(0, 0, 0);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-button:hover {
+  background-color: rgb(190, 190, 190);
+  border-color: rgb(103, 102, 102);
+  box-shadow: 0 0 4px rgba(227, 227, 227, 0.7);
+}
+
+.form-button.creating {
+  background-color: rgb(11, 216, 11);
+  border: 1px rgb(0, 70, 20) solid;
+  color: rgb(0, 70, 20);
+}
+
+.form-button.creating:hover {
   background-color: rgb(37, 202, 37);
   border-color: lightgreen;
   box-shadow: 0 0 4px rgba(144, 238, 144, 0.7);
