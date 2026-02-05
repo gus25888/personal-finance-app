@@ -20,7 +20,7 @@ import { movementsService } from "../domain/movements";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 
 type Props = {
-    onRemoveMovement: (id: number) => void;
+    movementToEdit: Movement | null;
     onEditMovement: (movement: Movement) => void;
     onClearEditMovement: () => void;
     registerCreateMovement: (
@@ -38,7 +38,7 @@ type Props = {
 const DEFAULT_ERROR = "Unknown Error";
 
 const MovementList = ({
-    onRemoveMovement,
+    movementToEdit,
     onEditMovement,
     onClearEditMovement,
     registerCreateMovement,
@@ -158,6 +158,54 @@ const MovementList = ({
         }
     };
 
+    const deleteMovement = async (id: number): Promise<ServiceResult<void>> => {
+        setStateLoadingMovements(true);
+        setErrorLoadingMovements(null);
+
+        try {
+            const result = await movementsService.deleteMovement(id);
+
+            if (!result.success) {
+                const message = formatBackendError(result.error);
+
+                setErrorLoadingMovements(message);
+
+                return {
+                    success: false,
+                    error: result.error,
+                };
+            }
+
+            setMovements((prevState) =>
+                prevState.filter((prev) => prev.id !== id),
+            );
+
+            // Se "refresca" el formulario, en caso de que el movimiento que se borra estaba cargado en el.
+            if (movementToEdit?.id === id) {
+                onClearEditMovement();
+            }
+
+            return {
+                success: true,
+                data: undefined,
+            };
+        } catch (error: unknown) {
+            const err = typeof error === "string" ? error : DEFAULT_ERROR;
+
+            setErrorLoadingMovements(err);
+            return {
+                success: false,
+                error: {
+                    error: DEFAULT_ERROR,
+                    message: err,
+                    statusCode: 400,
+                },
+            };
+        } finally {
+            setStateLoadingMovements(false);
+        }
+    };
+
     /* Registro de función para crear  */
     useEffect(() => {
         registerCreateMovement(createMovement);
@@ -249,8 +297,12 @@ const MovementList = ({
                                 <button
                                     className="delete-button"
                                     onClick={() => {
-                                        if (confirm("¿Eliminar movimiento?")) {
-                                            onRemoveMovement(movement.id);
+                                        if (
+                                            confirm(
+                                                `¿Eliminar movimiento '${movement.description}'?`,
+                                            )
+                                        ) {
+                                            deleteMovement(movement.id);
                                         }
                                     }}
                                 >

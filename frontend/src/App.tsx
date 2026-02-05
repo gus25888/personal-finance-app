@@ -8,11 +8,6 @@ import MovementList from "./components/MovementList";
 import type { ServiceResult } from "./domain/common/ServiceResult";
 
 function App(): JSX.Element {
-    /*
-    const removeMovement = (id: Movement["id"]) => {
-        setMovements((mov) => mov.filter((m) => m.id !== id));
-    };
-    */
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
 
@@ -43,10 +38,6 @@ function App(): JSX.Element {
         }
 
         return await createMovementRef.current(movement);
-    };
-
-    const removeMovement = () => {
-        console.log("removeMovement");
     };
 
     const editMovementRef =
@@ -85,7 +76,7 @@ function App(): JSX.Element {
                 onClearEditMovement={clearMovementToEdit}
             />
             <MovementList
-                onRemoveMovement={removeMovement}
+                movementToEdit={movementBeingEdited}
                 onEditMovement={defineMovementToEdit}
                 onClearEditMovement={clearMovementToEdit}
                 registerCreateMovement={(fn) => {

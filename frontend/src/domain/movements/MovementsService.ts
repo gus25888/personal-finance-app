@@ -230,4 +230,40 @@ export class MovementsService {
             };
         }
     }
+
+    async deleteMovement(id: number): Promise<ServiceResult<void>> {
+        try {
+            const response = await this.requestHandler.sendRequest(
+                "DELETE",
+                `${this.endpoint}/${id}`,
+            );
+            if (response.status === 204) {
+                return {
+                    success: true,
+                    data: undefined,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: {
+                        error: "Request Error",
+                        message: response.data as string,
+                        statusCode: response.status,
+                    },
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: {
+                    error: "Request Error",
+                    message:
+                        error instanceof Error
+                            ? (error.message as string)
+                            : "Ha ocurrido un problema en la solicitud",
+                    statusCode: 500,
+                },
+            };
+        }
+    }
 }
