@@ -20,6 +20,14 @@ body {
   margin-bottom: 20px;
 }
 
+.error-messages {
+  background-color: rgba(241, 168, 168, 0.945);
+  color: rgba(255, 0, 0, 0.911);
+  border: 1px rgb(88, 0, 0) solid;
+  padding: 5px;
+  font-size: 1.5em;
+}
+
 /* --- FORMULARIO --- */
 .app-container {
   margin: 0 auto;

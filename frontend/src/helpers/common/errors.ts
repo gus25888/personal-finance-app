@@ -5,6 +5,3 @@ export const ERROR_TYPES = {
 } as const;
 
 export const DEFAULT_ERROR_MESSAGE = "Ha ocurrido un problema en la solicitud";
-
-export const INTERNAL_ERROR_STATUS = 500;
-export const VALIDATION_ERROR_STATUS = 400;

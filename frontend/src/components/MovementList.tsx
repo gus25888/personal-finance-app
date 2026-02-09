@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react";
+import { useCallback, useEffect, useState, type JSX } from "react";
 
 import {
     CATEGORY_FILTER_ALL,
@@ -18,6 +18,7 @@ import MovementListFilters from "./MovementListFilters";
 import { categories } from "../data/categories";
 import { movementsService } from "../domain/movements";
 import type { ServiceResult } from "../domain/common/ServiceResult";
+import type { BackendError } from "../domain/common/BackendError";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -33,9 +34,6 @@ type Props = {
         ) => Promise<ServiceResult<Movement>>,
     ) => void;
 };
-
-// TODO: Cambiar el default error por algo más util
-const DEFAULT_ERROR = "Unknown Error";
 
 const MovementList = ({
     movementToEdit,
@@ -60,19 +58,20 @@ const MovementList = ({
         string | null
     >(null);
 
-    const createMovement = async (
-        movement: NewMovement,
-    ): Promise<ServiceResult<Movement>> => {
-        setStateLoadingMovements(true);
-        setErrorLoadingMovements(null);
+    const manageError = (resultError: BackendError) => {
+        setErrorLoadingMovements(formatBackendError(resultError));
+        setStateLoadingMovements(false);
+    };
 
-        try {
+    const createMovement = useCallback(
+        async (movement: NewMovement): Promise<ServiceResult<Movement>> => {
+            setStateLoadingMovements(true);
+            setErrorLoadingMovements(null);
+
             const result = await movementsService.createMovement(movement);
 
             if (!result.success) {
-                const message = formatBackendError(result.error);
-
-                setErrorLoadingMovements(message);
+                manageError(result.error);
 
                 return {
                     success: false,
@@ -84,41 +83,28 @@ const MovementList = ({
 
             setMovements((prevState) => [...prevState, movementCreated]);
 
+            setStateLoadingMovements(false);
+
             return {
                 success: true,
                 data: movementCreated,
             };
-        } catch (error: unknown) {
-            const err = typeof error === "string" ? error : DEFAULT_ERROR;
+        },
+        [],
+    );
 
-            setErrorLoadingMovements(err);
-            return {
-                success: false,
-                error: {
-                    error: DEFAULT_ERROR,
-                    message: err,
-                    statusCode: 400,
-                },
-            };
-        } finally {
-            setStateLoadingMovements(false);
-        }
-    };
+    const updateMovement = useCallback(
+        async (
+            id: number,
+            movement: Partial<Movement>,
+        ): Promise<ServiceResult<Movement>> => {
+            setStateLoadingMovements(true);
+            setErrorLoadingMovements(null);
 
-    const updateMovement = async (
-        id: number,
-        movement: Partial<Movement>,
-    ): Promise<ServiceResult<Movement>> => {
-        setStateLoadingMovements(true);
-        setErrorLoadingMovements(null);
-
-        try {
             const result = await movementsService.updateMovement(id, movement);
 
             if (!result.success) {
-                const message = formatBackendError(result.error);
-
-                setErrorLoadingMovements(message);
+                manageError(result.error);
 
                 return {
                     success: false,
@@ -136,85 +122,55 @@ const MovementList = ({
 
             // Se limpia el movimiento que estaba en edición para "refrescar" el formulario.
             onClearEditMovement();
+            setStateLoadingMovements(false);
 
             return {
                 success: true,
                 data: movementUpdated,
             };
-        } catch (error: unknown) {
-            const err = typeof error === "string" ? error : DEFAULT_ERROR;
-
-            setErrorLoadingMovements(err);
-            return {
-                success: false,
-                error: {
-                    error: DEFAULT_ERROR,
-                    message: err,
-                    statusCode: 400,
-                },
-            };
-        } finally {
-            setStateLoadingMovements(false);
-        }
-    };
+        },
+        [onClearEditMovement],
+    );
 
     const deleteMovement = async (id: number): Promise<ServiceResult<void>> => {
         setStateLoadingMovements(true);
         setErrorLoadingMovements(null);
 
-        try {
-            const result = await movementsService.deleteMovement(id);
+        const result = await movementsService.deleteMovement(id);
 
-            if (!result.success) {
-                const message = formatBackendError(result.error);
+        if (!result.success) {
+            manageError(result.error);
 
-                setErrorLoadingMovements(message);
-
-                return {
-                    success: false,
-                    error: result.error,
-                };
-            }
-
-            setMovements((prevState) =>
-                prevState.filter((prev) => prev.id !== id),
-            );
-
-            // Se "refresca" el formulario, en caso de que el movimiento que se borra estaba cargado en el.
-            if (movementToEdit?.id === id) {
-                onClearEditMovement();
-            }
-
-            return {
-                success: true,
-                data: undefined,
-            };
-        } catch (error: unknown) {
-            const err = typeof error === "string" ? error : DEFAULT_ERROR;
-
-            setErrorLoadingMovements(err);
             return {
                 success: false,
-                error: {
-                    error: DEFAULT_ERROR,
-                    message: err,
-                    statusCode: 400,
-                },
+                error: result.error,
             };
-        } finally {
-            setStateLoadingMovements(false);
         }
+
+        setMovements((prevState) => prevState.filter((prev) => prev.id !== id));
+
+        // Se "refresca" el formulario, en caso de que el movimiento que se borra estaba cargado en el.
+        if (movementToEdit?.id === id) {
+            onClearEditMovement();
+        }
+
+        setStateLoadingMovements(false);
+
+        return {
+            success: true,
+            data: undefined,
+        };
     };
 
     /* Registro de función para crear  */
     useEffect(() => {
         registerCreateMovement(createMovement);
-    }, [registerCreateMovement]);
+    }, [registerCreateMovement, createMovement]);
 
     /* Registro de función para editar  */
     useEffect(() => {
         registerEditMovement(updateMovement);
-    }, [registerEditMovement]);
+    }, [registerEditMovement, updateMovement]);
 
     /* Obtención de datos de Movements */
     useEffect(() => {
@@ -262,6 +218,9 @@ const MovementList = ({
 
     return (
         <section className="table-section">
+            {errorLoadingMovements && (
+                <div className="error-messages">{errorLoadingMovements}</div>
+            )}
             <p className="table-title">Movements List</p>
             <MovementListFilters
                 movementType={movementType}
@@ -278,6 +237,7 @@ const MovementList = ({
                 <span className="movement-total-item">{`Expenses: $ ${totalExpense}`}</span>
                 <span className="movement-total-item">{`Balance: $ ${balance}`}</span>
             </p>
+            {stateLoadingMovements && <p>Loading movements...</p>}
             <table className="movements-table">
                 <thead className="table-header">
                     <tr>
