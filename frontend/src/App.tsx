@@ -3,11 +3,19 @@ import "./App.css";
 import { useRef, useState, type JSX } from "react";
 
 import type { Movement, NewMovement } from "./types";
+
+import ErrorMessage from "./components/ErrorMessage";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
+
 import type { ServiceResult } from "./domain/common/ServiceResult";
 
+import { HTTP_STATUS } from "./helpers/common/httpStatusCodes";
+import { ERROR_TYPES } from "./helpers/common/errors";
+
 function App(): JSX.Element {
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
 
@@ -16,6 +24,10 @@ function App(): JSX.Element {
     };
     const clearMovementToEdit = () => {
         setMovementBeingEdited(null);
+    };
+
+    const reportError = (errorText: string | null) => {
+        setErrorMessage(errorText);
     };
 
     const createMovementRef =
@@ -30,9 +42,9 @@ function App(): JSX.Element {
             return {
                 success: false,
                 error: {
-                    error: "FrontEnd",
-                    message: "Create movement not initialized",
-                    statusCode: 400,
+                    error: ERROR_TYPES.APPLICATION,
+                    message: "The Application is not ready to create movements",
+                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
                 },
             };
         }
@@ -56,9 +68,9 @@ function App(): JSX.Element {
             return {
                 success: false,
                 error: {
-                    error: "FrontEnd",
-                    message: "Edit movement not initialized",
-                    statusCode: 400,
+                    error: ERROR_TYPES.APPLICATION,
+                    message: "The Application is not ready to edit movements",
+                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
                 },
             };
         }
@@ -69,13 +81,16 @@ function App(): JSX.Element {
     return (
         <div className="app-container">
             <h1 className="app-title">Personal Finances</h1>
+            <ErrorMessage message={errorMessage} />
             <MovementForm
                 movementToEdit={movementBeingEdited}
                 onAddMovement={addMovement}
                 onEditMovement={editMovement}
                 onClearEditMovement={clearMovementToEdit}
+                onReportError={reportError}
             />
             <MovementList
+                onReportError={reportError}
                 movementToEdit={movementBeingEdited}
                 onEditMovement={defineMovementToEdit}
                 onClearEditMovement={clearMovementToEdit}

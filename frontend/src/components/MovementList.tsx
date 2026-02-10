@@ -22,6 +22,7 @@ import type { BackendError } from "../domain/common/BackendError";
 
 type Props = {
     movementToEdit: Movement | null;
+    onReportError: (errorText: string | null) => void;
     onEditMovement: (movement: Movement) => void;
     onClearEditMovement: () => void;
     registerCreateMovement: (
@@ -37,6 +38,7 @@ type Props = {
 
 const MovementList = ({
     movementToEdit,
+    onReportError,
     onEditMovement,
     onClearEditMovement,
     registerCreateMovement,
@@ -54,19 +56,23 @@ const MovementList = ({
 
     const [stateLoadingMovements, setStateLoadingMovements] =
         useState<boolean>(false);
-    const [errorLoadingMovements, setErrorLoadingMovements] = useState<
-        string | null
-    >(null);
 
-    const manageError = (resultError: BackendError) => {
-        setErrorLoadingMovements(formatBackendError(resultError));
-        setStateLoadingMovements(false);
-    };
+    const manageError = useCallback(
+        (resultError: BackendError) => {
+            onReportError(formatBackendError(resultError));
+            setStateLoadingMovements(false);
+        },
+        [onReportError],
+    );
+
+    const startOperation = useCallback(() => {
+        setStateLoadingMovements(true);
+        onReportError(null);
+    }, [onReportError]);
 
     const createMovement = useCallback(
         async (movement: NewMovement): Promise<ServiceResult<Movement>> => {
-            setStateLoadingMovements(true);
-            setErrorLoadingMovements(null);
+            startOperation();
 
             const result = await movementsService.createMovement(movement);
 
@@ -90,7 +96,7 @@ const MovementList = ({
                 data: movementCreated,
             };
         },
-        [],
+        [manageError, startOperation],
     );
 
     const updateMovement = useCallback(
@@ -98,8 +104,7 @@ const MovementList = ({
             id: number,
             movement: Partial<Movement>,
         ): Promise<ServiceResult<Movement>> => {
-            setStateLoadingMovements(true);
-            setErrorLoadingMovements(null);
+            startOperation();
 
             const result = await movementsService.updateMovement(id, movement);
 
@@ -129,12 +134,11 @@ const MovementList = ({
                 data: movementUpdated,
             };
         },
-        [onClearEditMovement],
+        [onClearEditMovement, manageError, startOperation],
     );
 
     const deleteMovement = async (id: number): Promise<ServiceResult<void>> => {
-        setStateLoadingMovements(true);
-        setErrorLoadingMovements(null);
+        startOperation();
 
         const result = await movementsService.deleteMovement(id);
 
@@ -180,8 +184,7 @@ const MovementList = ({
             movementStartDate: string,
             movementEndDate: string,
         ) => {
-            setStateLoadingMovements(true);
-            setErrorLoadingMovements(null);
+            startOperation();
 
             const filters = {
                 startDate: movementStartDate || undefined,
@@ -200,10 +203,10 @@ const MovementList = ({
 
             if (result.success) {
                 setMovements(result.data ?? []);
+                setStateLoadingMovements(false);
             } else {
-                setErrorLoadingMovements(formatBackendError(result.error));
+                manageError(result.error);
             }
-            setStateLoadingMovements(false);
         };
 
         fetchMovements(
@@ -212,15 +215,19 @@ const MovementList = ({
             movementStartDate,
             movementEndDate,
         );
-    }, [movementType, movementCategory, movementStartDate, movementEndDate]);
+    }, [
+        movementType,
+        movementCategory,
+        movementStartDate,
+        movementEndDate,
+        manageError,
+        startOperation,
+    ]);
 
     const { totalIncome, totalExpense, balance } = calculateTotals(movements);
 
     return (
         <section className="table-section">
-            {errorLoadingMovements && (
-                <div className="error-messages">{errorLoadingMovements}</div>
-            )}
             <p className="table-title">Movements List</p>
             <MovementListFilters
                 movementType={movementType}

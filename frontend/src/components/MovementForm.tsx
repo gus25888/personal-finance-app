@@ -18,6 +18,7 @@ type Props = {
         movement: Partial<Movement>,
     ) => Promise<ServiceResult<Movement>>;
     onClearEditMovement: () => void;
+    onReportError: (errorText: string | null) => void;
 };
 
 const MovementForm = ({
@@ -25,6 +26,7 @@ const MovementForm = ({
     onAddMovement,
     onEditMovement,
     onClearEditMovement,
+    onReportError,
 }: Props): JSX.Element => {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
@@ -80,15 +82,15 @@ const MovementForm = ({
         const cleanedDescription = description.trim();
 
         if (!date) {
-            alert("La fecha es un valor requerido");
+            onReportError("Date is required");
             return;
         }
-        if (cleanedDescription.length < 1) {
-            alert("La descripción es un valor requerido");
+        if (cleanedDescription.length < 5) {
+            onReportError("Description must have at least 5 characters");
             return;
         }
         if (Number(amount) < 1) {
-            alert("La cantidad es un valor requerido mayor a 0");
+            onReportError("Amount must be greater than 0");
             return;
         }
 
@@ -109,11 +111,9 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                alert("Registro modificado correctamente");
+                alert("Movement updated successfully");
             } else {
-                const message = formatBackendError(result.error);
-
-                alert(`Error: ${message}`);
+                onReportError(formatBackendError(result.error));
             }
         } else {
             const newMovement: NewMovement = {
@@ -128,11 +128,9 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                alert("Registro creado correctamente");
+                alert("Movement created successfully");
             } else {
-                const message = formatBackendError(result.error);
-
-                alert(`Error: ${message}`);
+                onReportError(formatBackendError(result.error));
             }
         }
     };
