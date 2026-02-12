@@ -14,7 +14,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
-import { Category } from './entities/category.entity';
+import { ResponseCategoryDto } from './dtos/response-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -25,7 +25,7 @@ export class CategoriesController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'List of Categories',
-    type: [Category],
+    type: [ResponseCategoryDto],
   })
   getAll() {
     return this.categoriesService.findAll();
@@ -34,7 +34,7 @@ export class CategoriesController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'A Category found by id',
-    type: Category,
+    type: ResponseCategoryDto,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
@@ -53,7 +53,7 @@ export class CategoriesController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Category was created',
-    type: Category,
+    type: ResponseCategoryDto,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({
@@ -81,7 +81,7 @@ export class CategoriesController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Category updated successfully',
-    type: Category,
+    type: ResponseCategoryDto,
   })
   update(
     @Param('id') id: string,

@@ -16,6 +16,7 @@ import { UpdateCategoryDto } from './dtos/update-category.dto';
 
 import { CategoryRulesService } from '../category-rules/category-rules.service';
 import { Movement } from '../movements/entities/movement.entity';
+import { ResponseCategoryDto } from './dtos/response-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -28,6 +29,14 @@ export class CategoriesService {
     private readonly movementsRepository: Repository<Movement>,
     private readonly categoryRulesService: CategoryRulesService,
   ) {}
+
+  mapCategoryResponse(category: Category): ResponseCategoryDto {
+    return {
+      id: category.id,
+      name: category.name,
+      type: category.type,
+    };
+  }
 
   async getCategoryMovementsCount(categoryId: number) {
     return await this.movementsRepository.countBy({
@@ -53,27 +62,35 @@ export class CategoriesService {
     return category;
   }
 
-  async create(createCategoryDto: CreateCategoryDto) {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<ResponseCategoryDto | undefined> {
     try {
       const category = this.categoryRepository.create(createCategoryDto);
 
       await this.categoryRepository.save(category);
-      return category;
+      return this.mapCategoryResponse(category);
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<ResponseCategoryDto[]> {
     const categories = await this.categoryRepository.find();
-    return categories;
+
+    return categories.map((category) => this.mapCategoryResponse(category));
   }
 
-  async findOne(id: number) {
-    return await this.getUsableCategory(id);
+  async findOne(id: number): Promise<ResponseCategoryDto> {
+    const category = await this.getUsableCategory(id);
+
+    return this.mapCategoryResponse(category);
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<ResponseCategoryDto | undefined> {
     if (!updateCategoryDto) {
       throw new BadRequestException(`Not valid data sent for the update.`);
     }
@@ -94,7 +111,9 @@ export class CategoriesService {
         updatedAt: new Date(),
         ...updateCategoryDto,
       };
-      return await this.categoryRepository.save(categoryToUpdate);
+      return this.mapCategoryResponse(
+        await this.categoryRepository.save(categoryToUpdate),
+      );
     } catch (error) {
       handleDBExceptions(error, this.logger);
     }
