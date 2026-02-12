@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ResponseCategoryDto } from './response-category.dto';
+import { ResponseCategoryWithDeletedDto } from '../../../categories/dtos/response-category-with-deleted.dto';
 
 export class ResponseMovementDto {
   @ApiProperty({
@@ -33,9 +33,9 @@ export class ResponseMovementDto {
   @ApiProperty({
     description: 'Movement Category data',
     nullable: false,
-    type: ResponseCategoryDto,
+    type: ResponseCategoryWithDeletedDto,
   })
-  category: ResponseCategoryDto;
+  category: ResponseCategoryWithDeletedDto;
 
   @ApiProperty({
     description: 'Value that indicates when the movement was created',

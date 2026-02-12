@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { CategoryType } from '../../../categories/constants/categories.constants';
+import { CategoryType } from '../constants/categories.constants';
 
-// TODO: Debe moverse este DTO a Categories. Debe renombrarse a ResponseCategoryWithDeletedDto
-export class ResponseCategoryDto {
+export class ResponseCategoryWithDeletedDto {
   @ApiProperty({
     description: 'Category Id (Primary Key)',
     nullable: false,
