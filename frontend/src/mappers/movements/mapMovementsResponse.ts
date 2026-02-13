@@ -1,5 +1,5 @@
-import type { CategoryType } from "../../domain/movements/types";
-import type { Movement } from "../../types";
+import type { CategoryType } from "../../domain/categories/types";
+import type { Movement } from "../../domain/movements/types";
 import type { BackendMovement } from "./types";
 
 export const mapMovementsResponse = (
@@ -12,5 +12,6 @@ export const mapMovementsResponse = (
     description: backendMovementData.description,
     amount: backendMovementData.amount,
     categoryId: backendMovementData.category.id,
+    categoryName: backendMovementData.category.name,
     type: backendMovementData.category.type as CategoryType,
 });

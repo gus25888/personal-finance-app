@@ -1,6 +1,6 @@
 import { apiBaseUrl } from "../config/api";
 
-interface HttpResponse {
+export interface HttpResponse {
     data?: unknown;
     status: number;
 }

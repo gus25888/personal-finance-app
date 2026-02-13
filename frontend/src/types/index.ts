@@ -1,9 +1,10 @@
-/** CATEGORY CONSTANTS AND TYPES */
-export const CATEGORY_TYPE = {
-    INCOME: "income",
-    EXPENSE: "expense",
-} as const;
+import {
+    CATEGORY_TYPE,
+    type Category,
+    type CategoryType,
+} from "../domain/categories/types";
 
+/** CATEGORY CONSTANTS AND TYPES */
 export const CATEGORY_TYPE_FILTER = {
     ...CATEGORY_TYPE,
     ALL: "all",
@@ -19,15 +20,8 @@ export const CATEGORY_TYPE_FILTER_LABEL = {
     all: "All",
 } as const;
 
-export type CategoryType = (typeof CATEGORY_TYPE)[keyof typeof CATEGORY_TYPE];
-
 export type CategoryTypeFilter =
     (typeof CATEGORY_TYPE_FILTER)[keyof typeof CATEGORY_TYPE_FILTER];
-
-export type Category = {
-    id: number;
-    name: string;
-};
 
 export type CategoryFilter = Category["id"] | typeof CATEGORY_FILTER_ALL;
 

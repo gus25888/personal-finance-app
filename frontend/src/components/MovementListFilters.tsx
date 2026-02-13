@@ -7,7 +7,7 @@ import {
     CATEGORY_TYPE_FILTER,
     CATEGORY_TYPE_FILTER_LABEL,
 } from "../types";
-import { categories } from "../data/categories";
+import type { Category } from "../domain/categories/types";
 
 type FiltersProps = {
     movementType: CategoryTypeFilter;
@@ -18,6 +18,7 @@ type FiltersProps = {
     setMovementStartDate: React.Dispatch<React.SetStateAction<string>>;
     movementEndDate: string;
     setMovementEndDate: React.Dispatch<React.SetStateAction<string>>;
+    categories: Category[];
 };
 
 const MovementListFilters = ({
@@ -29,6 +30,7 @@ const MovementListFilters = ({
     setMovementStartDate,
     movementEndDate,
     setMovementEndDate,
+    categories,
 }: FiltersProps): JSX.Element => {
     const onChangeMovementType = (event: React.ChangeEvent<HTMLInputElement>) =>
         setMovementType(event.target.value as CategoryTypeFilter);

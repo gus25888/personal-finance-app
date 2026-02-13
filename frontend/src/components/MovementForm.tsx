@@ -1,14 +1,12 @@
 import { useEffect, useState, type JSX } from "react";
-import { categories } from "../data/categories";
-import {
-    CATEGORY_TYPE,
-    CATEGORY_TYPE_LABEL,
-    type Movement,
-    type CategoryType,
-    type NewMovement,
-} from "../types";
+import { CATEGORY_TYPE_LABEL, type Movement, type NewMovement } from "../types";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
+import {
+    CATEGORY_TYPE,
+    type Category,
+    type CategoryType,
+} from "../domain/categories/types";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -19,6 +17,7 @@ type Props = {
     ) => Promise<ServiceResult<Movement>>;
     onClearEditMovement: () => void;
     onReportError: (errorText: string | null) => void;
+    categories: Category[];
 };
 
 const MovementForm = ({
@@ -27,18 +26,19 @@ const MovementForm = ({
     onEditMovement,
     onClearEditMovement,
     onReportError,
+    categories,
 }: Props): JSX.Element => {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState<string>("");
-    const [categoryId, setCategoryId] = useState(categories[0].id);
+    const [categoryId, setCategoryId] = useState<Category["id"] | null>(null);
     const [type, setType] = useState<CategoryType>(CATEGORY_TYPE.EXPENSE);
 
     const resetForm = () => {
         setDate("");
         setDescription("");
         setAmount("");
-        setCategoryId(categories[0].id);
+        setCategoryId(null);
         setType(CATEGORY_TYPE.EXPENSE);
     };
 
@@ -67,7 +67,9 @@ const MovementForm = ({
                 : event.target.value,
         );
     const onChangeCategoryId = (event: React.ChangeEvent<HTMLSelectElement>) =>
-        setCategoryId(Number(event.target.value));
+        setCategoryId(
+            event.target.value === "" ? null : Number(event.target.value),
+        );
     const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
         setType(event.target.value as CategoryType);
 
@@ -91,6 +93,10 @@ const MovementForm = ({
         }
         if (Number(amount) < 1) {
             onReportError("Amount must be greater than 0");
+            return;
+        }
+        if (typeof categoryId !== "number") {
+            onReportError("Category is required");
             return;
         }
 
@@ -207,9 +213,12 @@ const MovementForm = ({
                         <select
                             id="movementCategory"
                             className="form-input"
-                            value={categoryId}
+                            value={categoryId ?? ""}
                             onChange={onChangeCategoryId}
                         >
+                            <option key={0} value={""}>
+                                {"--- Select a category ---"}
+                            </option>
                             {categories.map((category) => {
                                 return (
                                     <option

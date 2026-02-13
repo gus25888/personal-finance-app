@@ -5,20 +5,20 @@ import {
     CATEGORY_TYPE_FILTER,
     CATEGORY_TYPE_LABEL,
     type CategoryFilter,
-    type Movement,
     type CategoryTypeFilter,
-    type CategoryType,
     type NewMovement,
 } from "../types";
 
-import { calculateTotals, getCategoryName } from "../helpers/movements/";
+import { calculateTotals } from "../helpers/movements/";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
 
-import MovementListFilters from "./MovementListFilters";
-import { categories } from "../data/categories";
 import { movementsService } from "../domain/movements";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import type { BackendError } from "../domain/common/BackendError";
+import type { Category, CategoryType } from "../domain/categories/types";
+import type { Movement } from "../domain/movements/types";
+
+import MovementListFilters from "./MovementListFilters";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -34,6 +34,7 @@ type Props = {
             movement: Partial<Movement>,
         ) => Promise<ServiceResult<Movement>>,
     ) => void;
+    categories: Category[];
 };
 
 const MovementList = ({
@@ -43,6 +44,7 @@ const MovementList = ({
     onClearEditMovement,
     registerCreateMovement,
     registerEditMovement,
+    categories,
 }: Props): JSX.Element => {
     const [movementType, setMovementType] = useState<CategoryTypeFilter>(
         CATEGORY_TYPE_FILTER.ALL,
@@ -238,6 +240,7 @@ const MovementList = ({
                 setMovementStartDate={setMovementStartDate}
                 movementEndDate={movementEndDate}
                 setMovementEndDate={setMovementEndDate}
+                categories={categories}
             />
             <p className="movement-totals-container">
                 <span className="movement-total-item">{`Income: $ ${totalIncome}`}</span>
@@ -287,10 +290,7 @@ const MovementList = ({
                                 </button>
                             </td>
                             <td className="table-cell table-cell-center">
-                                {getCategoryName(
-                                    categories,
-                                    movement.categoryId,
-                                )}
+                                {movement.categoryName}
                             </td>
                             <td className="table-cell table-cell-center">
                                 {CATEGORY_TYPE_LABEL[movement.type]}

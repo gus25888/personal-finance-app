@@ -1,8 +1,9 @@
 import "./App.css";
 
-import { useRef, useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 
-import type { Movement, NewMovement } from "./types";
+import type { NewMovement } from "./types";
+import type { Movement } from "./domain/movements/types";
 
 import ErrorMessage from "./components/ErrorMessage";
 import MovementForm from "./components/MovementForm";
@@ -12,9 +13,28 @@ import type { ServiceResult } from "./domain/common/ServiceResult";
 
 import { HTTP_STATUS } from "./helpers/common/httpStatusCodes";
 import { ERROR_TYPES } from "./helpers/common/errors";
+import type { Category } from "./domain/categories/types";
+import { categoriesService } from "./domain/categories";
+import { formatBackendError } from "./helpers/common/formatBackendErrors";
 
 function App(): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const result = await categoriesService.getCategories();
+
+            if (result.success) {
+                setCategories(result.data ?? []);
+            } else {
+                setErrorMessage(formatBackendError(result.error));
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
@@ -88,6 +108,7 @@ function App(): JSX.Element {
                 onEditMovement={editMovement}
                 onClearEditMovement={clearMovementToEdit}
                 onReportError={reportError}
+                categories={categories}
             />
             <MovementList
                 onReportError={reportError}
@@ -100,6 +121,7 @@ function App(): JSX.Element {
                 registerEditMovement={(fn) => {
                     editMovementRef.current = fn;
                 }}
+                categories={categories}
             />
         </div>
     );
