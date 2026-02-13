@@ -1,4 +1,5 @@
 import { apiBaseUrl } from "../config/api";
+import { HTTP_STATUS } from "../helpers/common/httpStatusCodes";
 
 export interface HttpResponse {
     data?: unknown;
@@ -46,6 +47,10 @@ export class HttpRequestHandler {
         }
 
         const response = await fetch(url, options);
+
+        if (response.status === HTTP_STATUS.NO_CONTENT) {
+            return { status: response.status, data: null };
+        }
 
         try {
             const jsonResponse = await response.json();
