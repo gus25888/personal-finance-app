@@ -2,8 +2,7 @@ import "./App.css";
 
 import { useEffect, useRef, useState, type JSX } from "react";
 
-import type { NewMovement } from "./types";
-import type { Movement } from "./domain/movements/types";
+import type { Movement, NewMovement } from "./domain/movements/types";
 
 import ErrorMessage from "./components/ErrorMessage";
 import MovementForm from "./components/MovementForm";

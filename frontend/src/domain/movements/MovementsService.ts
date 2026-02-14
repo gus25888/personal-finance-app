@@ -7,9 +7,8 @@ import {
 } from "../../helpers/common/errors";
 import { HTTP_STATUS } from "../../helpers/common/httpStatusCodes";
 import { START_CURRENT_YEAR, END_CURRENT_YEAR } from "../../common/constants";
-import { type Movement, type MovementFilter } from "./types";
+import type { Movement, MovementFilter, NewMovement } from "./types";
 import { CATEGORY_TYPE } from "../categories/types";
-import type { NewMovement } from "../../types";
 
 import { getMovementsFilter } from "../../mappers/movements/movementsFilterMapper";
 import { mapEditMovementRequest } from "../../mappers/movements/mapEditMovementRequest";

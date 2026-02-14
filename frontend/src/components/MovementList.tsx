@@ -6,7 +6,6 @@ import {
     CATEGORY_TYPE_LABEL,
     type CategoryFilter,
     type CategoryTypeFilter,
-    type NewMovement,
 } from "../types";
 
 import { calculateTotals } from "../helpers/movements/";
@@ -16,7 +15,7 @@ import { movementsService } from "../domain/movements";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import type { BackendError } from "../domain/common/BackendError";
 import type { Category, CategoryType } from "../domain/categories/types";
-import type { Movement } from "../domain/movements/types";
+import type { Movement, NewMovement } from "../domain/movements/types";
 
 import MovementListFilters from "./MovementListFilters";
 

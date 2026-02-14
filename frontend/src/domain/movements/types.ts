@@ -10,6 +10,8 @@ export type Movement = {
     type: CategoryType;
 };
 
+export type NewMovement = Omit<Movement, "id" | "categoryName" | "type">;
+
 export type MovementFilter = {
     startDate?: string;
     endDate?: string;

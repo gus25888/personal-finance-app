@@ -1,5 +1,5 @@
 import { useEffect, useState, type JSX } from "react";
-import { CATEGORY_TYPE_LABEL, type Movement, type NewMovement } from "../types";
+import { CATEGORY_TYPE_LABEL } from "../types";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
 import {
@@ -7,6 +7,7 @@ import {
     type Category,
     type CategoryType,
 } from "../domain/categories/types";
+import { type Movement, type NewMovement } from "../domain/movements/types";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -127,7 +128,6 @@ const MovementForm = ({
                 description: cleanedDescription,
                 amount: Number(amount),
                 categoryId,
-                type,
             };
 
             const result = await onAddMovement(newMovement);
