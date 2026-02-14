@@ -44,13 +44,14 @@ const MovementForm = ({
     };
 
     useEffect(() => {
+        // TODO: Revisar el eliminar el comentario de ESLINT
         if (movementToEdit) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setDate(movementToEdit.date);
             setDescription(movementToEdit.description);
             setAmount(movementToEdit.amount.toString());
             setCategoryId(movementToEdit.categoryId);
-            setType(movementToEdit.type);
+            setType(movementToEdit.categoryType);
         } else {
             resetForm();
         }
@@ -108,7 +109,7 @@ const MovementForm = ({
                 description: cleanedDescription,
                 amount: Number(amount),
                 categoryId,
-                type,
+                categoryType: type,
             };
 
             const result = await onEditMovement(

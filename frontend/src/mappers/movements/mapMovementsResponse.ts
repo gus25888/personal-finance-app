@@ -13,5 +13,5 @@ export const mapMovementsResponse = (
     amount: backendMovementData.amount,
     categoryId: backendMovementData.category.id,
     categoryName: backendMovementData.category.name,
-    type: backendMovementData.category.type as CategoryType,
+    categoryType: backendMovementData.category.type as CategoryType,
 });

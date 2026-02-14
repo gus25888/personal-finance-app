@@ -7,10 +7,13 @@ export type Movement = {
     amount: number;
     categoryId: Category["id"];
     categoryName: Category["name"];
-    type: CategoryType;
+    categoryType: CategoryType;
 };
 
-export type NewMovement = Omit<Movement, "id" | "categoryName" | "type">;
+export type NewMovement = Omit<
+    Movement,
+    "id" | "categoryName" | "categoryType"
+>;
 
 export type MovementFilter = {
     startDate?: string;

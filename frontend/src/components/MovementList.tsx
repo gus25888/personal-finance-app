@@ -292,7 +292,7 @@ const MovementList = ({
                                 {movement.categoryName}
                             </td>
                             <td className="table-cell table-cell-center">
-                                {CATEGORY_TYPE_LABEL[movement.type]}
+                                {CATEGORY_TYPE_LABEL[movement.categoryType]}
                             </td>
                             <td className="table-cell table-cell-center">
                                 {movement.date}
