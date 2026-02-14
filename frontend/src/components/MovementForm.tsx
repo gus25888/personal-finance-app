@@ -1,13 +1,9 @@
 import { useEffect, useState, type JSX } from "react";
-import { CATEGORY_TYPE_LABEL } from "../types";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
-import {
-    CATEGORY_TYPE,
-    type Category,
-    type CategoryType,
-} from "../domain/categories/types";
+import { type Category } from "../domain/categories/types";
 import { type Movement, type NewMovement } from "../domain/movements/types";
+import { CATEGORY_TYPE_LABEL } from "../types";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -33,14 +29,12 @@ const MovementForm = ({
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState<string>("");
     const [categoryId, setCategoryId] = useState<Category["id"] | null>(null);
-    const [type, setType] = useState<CategoryType>(CATEGORY_TYPE.EXPENSE);
 
     const resetForm = () => {
         setDate("");
         setDescription("");
         setAmount("");
         setCategoryId(null);
-        setType(CATEGORY_TYPE.EXPENSE);
     };
 
     useEffect(() => {
@@ -51,7 +45,6 @@ const MovementForm = ({
             setDescription(movementToEdit.description);
             setAmount(movementToEdit.amount.toString());
             setCategoryId(movementToEdit.categoryId);
-            setType(movementToEdit.categoryType);
         } else {
             resetForm();
         }
@@ -72,8 +65,6 @@ const MovementForm = ({
         setCategoryId(
             event.target.value === "" ? null : Number(event.target.value),
         );
-    const onChangeType = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setType(event.target.value as CategoryType);
 
     const cancelEdition = () => {
         resetForm();
@@ -109,7 +100,6 @@ const MovementForm = ({
                 description: cleanedDescription,
                 amount: Number(amount),
                 categoryId,
-                categoryType: type,
             };
 
             const result = await onEditMovement(
@@ -146,30 +136,6 @@ const MovementForm = ({
         <div className="form-section">
             <p className="form-title">Enter a new Movement</p>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label className="radio-option">
-                        <input
-                            type="radio"
-                            id="movementType1"
-                            name="type"
-                            value={CATEGORY_TYPE.INCOME}
-                            checked={type === CATEGORY_TYPE.INCOME}
-                            onChange={onChangeType}
-                        />
-                        {CATEGORY_TYPE_LABEL.income}
-                    </label>
-                    <label className="radio-option">
-                        <input
-                            type="radio"
-                            id="movementType2"
-                            name="type"
-                            value={CATEGORY_TYPE.EXPENSE}
-                            checked={type === CATEGORY_TYPE.EXPENSE}
-                            onChange={onChangeType}
-                        />
-                        {CATEGORY_TYPE_LABEL.expense}
-                    </label>
-                </div>
                 <div className="form-group">
                     <label className="form-label" htmlFor="movementDate">
                         Date
@@ -226,7 +192,7 @@ const MovementForm = ({
                                         key={category.id}
                                         value={category.id}
                                     >
-                                        {category.name}
+                                        {`${category.name} - (${CATEGORY_TYPE_LABEL[category.type]})`}
                                     </option>
                                 );
                             })}

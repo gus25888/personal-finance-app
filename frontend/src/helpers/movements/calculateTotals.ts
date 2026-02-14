@@ -1,11 +1,12 @@
-import { CATEGORY_TYPE_FILTER, type Movement } from "../../types";
+import { CATEGORY_TYPE_FILTER } from "../../types";
+import type { Movement } from "../../domain/movements/types";
 
 export const calculateTotals = (movements: Movement[]) => {
     let totalIncome = 0,
         totalExpense = 0;
 
     movements.forEach((movement) => {
-        if (movement.type === CATEGORY_TYPE_FILTER.INCOME) {
+        if (movement.categoryType === CATEGORY_TYPE_FILTER.INCOME) {
             totalIncome += movement.amount;
         } else {
             totalExpense += movement.amount;
