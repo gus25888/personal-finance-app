@@ -102,6 +102,7 @@ function App(): JSX.Element {
             <h1 className="app-title">Personal Finances</h1>
             <ErrorMessage message={errorMessage} />
             <MovementForm
+                key={movementBeingEdited?.id ?? "new"}
                 movementToEdit={movementBeingEdited}
                 onAddMovement={addMovement}
                 onEditMovement={editMovement}

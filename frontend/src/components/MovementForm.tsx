@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import type { ServiceResult } from "../domain/common/ServiceResult";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
 import { type Category } from "../domain/categories/types";
@@ -25,10 +25,16 @@ const MovementForm = ({
     onReportError,
     categories,
 }: Props): JSX.Element => {
-    const [date, setDate] = useState("");
-    const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState<string>("");
-    const [categoryId, setCategoryId] = useState<Category["id"] | null>(null);
+    const [date, setDate] = useState<string>(movementToEdit?.date ?? "");
+    const [description, setDescription] = useState<string>(
+        movementToEdit?.description ?? "",
+    );
+    const [amount, setAmount] = useState<string>(
+        movementToEdit?.amount.toString() ?? "",
+    );
+    const [categoryId, setCategoryId] = useState<Category["id"] | null>(
+        movementToEdit?.categoryId ?? null,
+    );
 
     const resetForm = () => {
         setDate("");
@@ -36,19 +42,6 @@ const MovementForm = ({
         setAmount("");
         setCategoryId(null);
     };
-
-    useEffect(() => {
-        // TODO: Revisar el eliminar el comentario de ESLINT
-        if (movementToEdit) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setDate(movementToEdit.date);
-            setDescription(movementToEdit.description);
-            setAmount(movementToEdit.amount.toString());
-            setCategoryId(movementToEdit.categoryId);
-        } else {
-            resetForm();
-        }
-    }, [movementToEdit]);
 
     const onChangeDate = (event: React.ChangeEvent<HTMLInputElement>) =>
         setDate(event.target.value);
