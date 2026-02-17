@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type JSX } from "react";
 
 import type { Movement, NewMovement } from "./domain/movements/types";
 
-import ErrorMessage from "./components/ErrorMessage";
+import NotificationBanner from "./components/NotificationBanner";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
 
@@ -15,9 +15,19 @@ import { ERROR_TYPES } from "./helpers/common/errors";
 import type { Category } from "./domain/categories/types";
 import { categoriesService } from "./domain/categories";
 import { formatBackendError } from "./helpers/common/formatBackendErrors";
+import {
+    NOTIFICATION_TYPES,
+    type NotificationData,
+} from "./types/notification";
 
 function App(): JSX.Element {
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [notification, setNotification] = useState<NotificationData | null>(
+        null,
+    );
+    const onShowNotification = (newNotification: NotificationData) => {
+        setNotification(newNotification);
+    };
+    const onCloseNotification = () => setNotification(null);
 
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -28,7 +38,10 @@ function App(): JSX.Element {
             if (result.success) {
                 setCategories(result.data ?? []);
             } else {
-                setErrorMessage(formatBackendError(result.error));
+                onShowNotification({
+                    type: NOTIFICATION_TYPES.ERROR,
+                    message: formatBackendError(result.error),
+                });
             }
         };
 
@@ -43,10 +56,6 @@ function App(): JSX.Element {
     };
     const clearMovementToEdit = () => {
         setMovementBeingEdited(null);
-    };
-
-    const reportError = (errorText: string | null) => {
-        setErrorMessage(errorText);
     };
 
     const createMovementRef =
@@ -97,21 +106,39 @@ function App(): JSX.Element {
         return await editMovementRef.current(id, movement);
     };
 
+    /*
+        Uso de key en MovementForm:
+
+        key, es uno de los Intrinsic Attributes de los componentes de React.
+        En el Form, permite generar una distinción en las props enviadas:
+        Si movementBeingEdited NO es null, se enviará el valor de su ID,
+        lo cual permite indicar al Form que debe refrescarse.
+        Dentro del Form se evalúa siempre el valor de la prop "movementBeingEdited"
+        y se asigna su valor, en caso de NO ser null, y se deja en blanco el formulario,
+        en caso de sí estarlo.
+
+        Con esto se evita tener que realizar refrescos internos en el componente.
+    */
     return (
         <div className="app-container">
             <h1 className="app-title">Personal Finances</h1>
-            <ErrorMessage message={errorMessage} />
+            {notification && (
+                <NotificationBanner
+                    notification={notification}
+                    onClose={onCloseNotification}
+                />
+            )}
             <MovementForm
                 key={movementBeingEdited?.id ?? "new"}
                 movementToEdit={movementBeingEdited}
                 onAddMovement={addMovement}
                 onEditMovement={editMovement}
                 onClearEditMovement={clearMovementToEdit}
-                onReportError={reportError}
+                onNotify={onShowNotification}
                 categories={categories}
             />
             <MovementList
-                onReportError={reportError}
+                onNotify={onShowNotification}
                 movementToEdit={movementBeingEdited}
                 onEditMovement={defineMovementToEdit}
                 onClearEditMovement={clearMovementToEdit}

@@ -4,6 +4,10 @@ import { formatBackendError } from "../helpers/common/formatBackendErrors";
 import { type Category } from "../domain/categories/types";
 import { type Movement, type NewMovement } from "../domain/movements/types";
 import { CATEGORY_TYPE_LABEL } from "../types";
+import {
+    NOTIFICATION_TYPES,
+    type NotificationData,
+} from "../types/notification";
 
 type Props = {
     movementToEdit: Movement | null;
@@ -13,7 +17,7 @@ type Props = {
         movement: Partial<Movement>,
     ) => Promise<ServiceResult<Movement>>;
     onClearEditMovement: () => void;
-    onReportError: (errorText: string | null) => void;
+    onNotify: (notificationData: NotificationData) => void;
     categories: Category[];
 };
 
@@ -22,7 +26,7 @@ const MovementForm = ({
     onAddMovement,
     onEditMovement,
     onClearEditMovement,
-    onReportError,
+    onNotify,
     categories,
 }: Props): JSX.Element => {
     const [date, setDate] = useState<string>(movementToEdit?.date ?? "");
@@ -70,19 +74,31 @@ const MovementForm = ({
         const cleanedDescription = description.trim();
 
         if (!date) {
-            onReportError("Date is required");
+            onNotify({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: "Date is required",
+            });
             return;
         }
         if (cleanedDescription.length < 5) {
-            onReportError("Description must have at least 5 characters");
+            onNotify({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: "Description must have at least 5 characters",
+            });
             return;
         }
         if (Number(amount) < 1) {
-            onReportError("Amount must be greater than 0");
+            onNotify({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: "Amount must be greater than 0",
+            });
             return;
         }
         if (typeof categoryId !== "number") {
-            onReportError("Category is required");
+            onNotify({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: "Category is required",
+            });
             return;
         }
 
@@ -102,9 +118,15 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                alert("Movement updated successfully");
+                onNotify({
+                    type: NOTIFICATION_TYPES.SUCCESS,
+                    message: "Movement updated successfully",
+                });
             } else {
-                onReportError(formatBackendError(result.error));
+                onNotify({
+                    type: NOTIFICATION_TYPES.ERROR,
+                    message: formatBackendError(result.error),
+                });
             }
         } else {
             const newMovement: NewMovement = {
@@ -118,9 +140,15 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                alert("Movement created successfully");
+                onNotify({
+                    type: NOTIFICATION_TYPES.SUCCESS,
+                    message: "Movement created successfully",
+                });
             } else {
-                onReportError(formatBackendError(result.error));
+                onNotify({
+                    type: NOTIFICATION_TYPES.ERROR,
+                    message: formatBackendError(result.error),
+                });
             }
         }
     };

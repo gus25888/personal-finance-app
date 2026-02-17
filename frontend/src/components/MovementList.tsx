@@ -7,6 +7,10 @@ import {
     type CategoryFilter,
     type CategoryTypeFilter,
 } from "../types";
+import {
+    NOTIFICATION_TYPES,
+    type NotificationData,
+} from "../types/notification";
 
 import { calculateTotals } from "../helpers/movements/";
 import { formatBackendError } from "../helpers/common/formatBackendErrors";
@@ -21,7 +25,7 @@ import MovementListFilters from "./MovementListFilters";
 
 type Props = {
     movementToEdit: Movement | null;
-    onReportError: (errorText: string | null) => void;
+    onNotify: (notificationData: NotificationData) => void;
     onEditMovement: (movement: Movement) => void;
     onClearEditMovement: () => void;
     registerCreateMovement: (
@@ -38,7 +42,7 @@ type Props = {
 
 const MovementList = ({
     movementToEdit,
-    onReportError,
+    onNotify,
     onEditMovement,
     onClearEditMovement,
     registerCreateMovement,
@@ -60,20 +64,18 @@ const MovementList = ({
 
     const manageError = useCallback(
         (resultError: BackendError) => {
-            onReportError(formatBackendError(resultError));
+            onNotify({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: formatBackendError(resultError),
+            });
             setStateLoadingMovements(false);
         },
-        [onReportError],
+        [onNotify],
     );
-
-    const startOperation = useCallback(() => {
-        setStateLoadingMovements(true);
-        onReportError(null);
-    }, [onReportError]);
 
     const createMovement = useCallback(
         async (movement: NewMovement): Promise<ServiceResult<Movement>> => {
-            startOperation();
+            setStateLoadingMovements(true);
 
             const result = await movementsService.createMovement(movement);
 
@@ -97,7 +99,7 @@ const MovementList = ({
                 data: movementCreated,
             };
         },
-        [manageError, startOperation],
+        [manageError],
     );
 
     const updateMovement = useCallback(
@@ -105,7 +107,7 @@ const MovementList = ({
             id: number,
             movement: Partial<Movement>,
         ): Promise<ServiceResult<Movement>> => {
-            startOperation();
+            setStateLoadingMovements(true);
 
             const result = await movementsService.updateMovement(id, movement);
 
@@ -135,11 +137,11 @@ const MovementList = ({
                 data: movementUpdated,
             };
         },
-        [onClearEditMovement, manageError, startOperation],
+        [onClearEditMovement, manageError],
     );
 
     const deleteMovement = async (id: number): Promise<ServiceResult<void>> => {
-        startOperation();
+        setStateLoadingMovements(true);
 
         const result = await movementsService.deleteMovement(id);
 
@@ -185,7 +187,7 @@ const MovementList = ({
             movementStartDate: string,
             movementEndDate: string,
         ) => {
-            startOperation();
+            setStateLoadingMovements(true);
 
             const filters = {
                 startDate: movementStartDate || undefined,
@@ -222,7 +224,6 @@ const MovementList = ({
         movementStartDate,
         movementEndDate,
         manageError,
-        startOperation,
     ]);
 
     const { totalIncome, totalExpense, balance } = calculateTotals(movements);
