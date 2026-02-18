@@ -7,3 +7,6 @@ export const HTTP_STATUS = {
     CONFLICT: 409,
     INTERNAL_ERROR: 500,
 } as const;
+
+export const isSuccessStatus = (status: number): boolean =>
+    status >= 200 && status < 300;

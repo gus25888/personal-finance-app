@@ -10,3 +10,5 @@ export type Category = {
     name: string;
     type: CategoryType;
 };
+
+export type NewCategory = Omit<Category, "id">;
