@@ -1,4 +1,4 @@
-import type { Movement } from "../../types";
+import type { Movement } from "../../domain/movements/types";
 import type { BackendEditMovement } from "./types";
 
 export const mapEditMovementRequest = (

@@ -1,4 +1,4 @@
-import type { NewMovement } from "../../types";
+import type { NewMovement } from "../../domain/movements/types";
 import type { BackendNewMovement } from "./types";
 
 export const mapNewMovementRequest = (
