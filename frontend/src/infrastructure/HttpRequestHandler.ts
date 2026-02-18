@@ -1,5 +1,5 @@
 import { apiBaseUrl } from "../config/api";
-import { HTTP_STATUS } from "../helpers/common/httpStatusCodes";
+import { HTTP_STATUS } from "./httpStatusCodes";
 
 export interface HttpResponse {
     data?: unknown;

@@ -2,19 +2,18 @@ import "./App.css";
 
 import { useEffect, useRef, useState, type JSX } from "react";
 
-import type { Movement, NewMovement } from "./domain/movements/types";
+import { formatBackendError } from "./infrastructure/formatBackendErrors";
+import { handleApplicationError } from "./infrastructure/serviceResultHandlers";
 
-import NotificationBanner from "./components/NotificationBanner";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
+import NotificationBanner from "./components/NotificationBanner";
 
-import type { ServiceResult } from "./domain/common/ServiceResult";
-
-import { HTTP_STATUS } from "./helpers/common/httpStatusCodes";
-import { ERROR_TYPES } from "./helpers/common/errors";
+import type { ServiceResult } from "./domain/common/types";
+import type { Movement, NewMovement } from "./domain/movements/types";
 import type { Category } from "./domain/categories/types";
 import { categoriesService } from "./domain/categories";
-import { formatBackendError } from "./helpers/common/formatBackendErrors";
+
 import {
     NOTIFICATION_TYPES,
     type NotificationData,
@@ -67,14 +66,9 @@ function App(): JSX.Element {
         movement: NewMovement,
     ): Promise<ServiceResult<Movement>> => {
         if (!createMovementRef.current) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.APPLICATION,
-                    message: "The Application is not ready to create movements",
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleApplicationError(
+                "The Application is not ready to create movements",
+            );
         }
 
         return await createMovementRef.current(movement);
@@ -93,14 +87,9 @@ function App(): JSX.Element {
         movement: Partial<Movement>,
     ): Promise<ServiceResult<Movement>> => {
         if (!editMovementRef.current) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.APPLICATION,
-                    message: "The Application is not ready to edit movements",
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleApplicationError(
+                "The Application is not ready to edit movements",
+            );
         }
 
         return await editMovementRef.current(id, movement);

@@ -13,13 +13,12 @@ import {
 } from "../types/notification";
 
 import { calculateTotals } from "../helpers/movements/";
-import { formatBackendError } from "../helpers/common/formatBackendErrors";
+import { formatBackendError } from "../infrastructure/formatBackendErrors";
 
-import { movementsService } from "../domain/movements";
-import type { ServiceResult } from "../domain/common/ServiceResult";
-import type { BackendError } from "../domain/common/BackendError";
+import type { ServiceResult, BackendError } from "../domain/common/types";
 import type { Category, CategoryType } from "../domain/categories/types";
 import type { Movement, NewMovement } from "../domain/movements/types";
+import { movementsService } from "../domain/movements";
 
 import MovementListFilters from "./MovementListFilters";
 

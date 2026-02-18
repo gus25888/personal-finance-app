@@ -1,6 +1,6 @@
 import { useState, type JSX } from "react";
-import type { ServiceResult } from "../domain/common/ServiceResult";
-import { formatBackendError } from "../helpers/common/formatBackendErrors";
+import { formatBackendError } from "../infrastructure/formatBackendErrors";
+import type { ServiceResult } from "../domain/common/types";
 import { type Category } from "../domain/categories/types";
 import { type Movement, type NewMovement } from "../domain/movements/types";
 import { CATEGORY_TYPE_LABEL } from "../types";

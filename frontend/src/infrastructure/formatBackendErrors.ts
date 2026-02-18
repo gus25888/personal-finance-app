@@ -1,5 +1,5 @@
-import type { ApiError, BackendError } from "../../domain/common/BackendError";
-import { DEFAULT_ERROR_MESSAGE } from "./errors";
+import type { ApiError, BackendError } from "../domain/common/types";
+import { DEFAULT_ERROR_MESSAGE } from "../helpers/common/errors";
 
 const isApiError = (value: unknown): value is ApiError => {
     return (

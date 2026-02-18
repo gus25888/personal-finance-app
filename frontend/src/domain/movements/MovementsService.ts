@@ -1,20 +1,20 @@
 import type { HttpRequestHandler } from "../../infrastructure/HttpRequestHandler";
-import type { ServiceResult } from "../common/ServiceResult";
 
-import {
-    DEFAULT_ERROR_MESSAGE,
-    ERROR_TYPES,
-} from "../../helpers/common/errors";
-import { HTTP_STATUS } from "../../helpers/common/httpStatusCodes";
-import { START_CURRENT_YEAR, END_CURRENT_YEAR } from "../../common/constants";
-import type { Movement, MovementFilter, NewMovement } from "./types";
 import { CATEGORY_TYPE } from "../categories/types";
+import type { ServiceResult } from "../common/types";
+import type { Movement, MovementFilter, NewMovement } from "./types";
 
+import type { BackendMovement } from "../../mappers/movements/types";
 import { getMovementsFilter } from "../../mappers/movements/movementsFilterMapper";
 import { mapEditMovementRequest } from "../../mappers/movements/mapEditMovementRequest";
 import { mapMovementsResponse } from "../../mappers/movements/mapMovementsResponse";
 import { mapNewMovementRequest } from "../../mappers/movements/mapNewMovementRequest";
-import type { BackendMovement } from "../../mappers/movements/types";
+
+import {
+    handleResponse,
+    handleUnexpectedError,
+    handleValidationError,
+} from "../../infrastructure/serviceResultHandlers";
 
 export class MovementsService {
     private requestHandler: HttpRequestHandler;
@@ -24,102 +24,41 @@ export class MovementsService {
         this.requestHandler = requestHandler;
     }
 
+    private validateFilters(filters: MovementFilter) {
+        if (filters.startDate !== undefined && filters.endDate === undefined) {
+            return handleValidationError("Invalid End Date specified");
+        } else if (
+            filters.startDate === undefined &&
+            filters.endDate !== undefined
+        ) {
+            return handleValidationError("Invalid Start Date specified");
+        }
+
+        if (filters.categoryType !== undefined) {
+            if (!Object.values(CATEGORY_TYPE).includes(filters.categoryType)) {
+                return handleValidationError("Invalid Category Type specified");
+            }
+        }
+    }
+
     async getMovements(
         filters: MovementFilter,
     ): Promise<ServiceResult<Movement[]>> {
-        // Validar los filtros enviados
-        const filtersToSend = { ...filters };
-        if (
-            filtersToSend.startDate === undefined &&
-            filtersToSend.endDate === undefined
-        ) {
-            filtersToSend.startDate =
-                START_CURRENT_YEAR.toISOString().split("T")[0];
-            filtersToSend.endDate =
-                END_CURRENT_YEAR.toISOString().split("T")[0];
-        } else if (
-            filtersToSend.startDate !== undefined &&
-            filtersToSend.endDate === undefined
-        ) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.VALIDATION,
-                    message: "Invalid End Date specified",
-                    statusCode: HTTP_STATUS.BAD_REQUEST,
-                },
-            };
-        } else if (
-            filtersToSend.startDate === undefined &&
-            filtersToSend.endDate !== undefined
-        ) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.VALIDATION,
-                    message: "Invalid Start Date specified",
-                    statusCode: HTTP_STATUS.BAD_REQUEST,
-                },
-            };
-        }
+        this.validateFilters(filters);
 
-        if (filtersToSend.categoryType !== undefined) {
-            if (
-                !Object.values(CATEGORY_TYPE).includes(
-                    filtersToSend.categoryType,
-                )
-            ) {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.VALIDATION,
-                        message: "Invalid Category Type specified",
-                        statusCode: HTTP_STATUS.BAD_REQUEST,
-                    },
-                };
-            }
-        }
-        const formattedFilter = getMovementsFilter(filtersToSend);
-        // Generar la request
-        // Obtener los resultados o el error (try catch?)
+        const formattedFilter = getMovementsFilter(filters);
+
         try {
             const response = await this.requestHandler.sendRequest(
                 "GET",
                 `${this.endpoint}${formattedFilter ? "?" + formattedFilter : ""}`,
             );
-            // Normalizar el resultado o error
-            // Retornar el resultado normalizado
-            if (response.status === HTTP_STATUS.OK) {
-                const responseData = response.data as BackendMovement[];
-
-                return {
-                    success: true,
-                    data: responseData.map((item) =>
-                        mapMovementsResponse(item),
-                    ),
-                };
-            } else {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.REQUEST,
-                        message: response.data as string,
-                        statusCode: response.status,
-                    },
-                };
-            }
+            return handleResponse<BackendMovement[], Movement[]>(
+                response,
+                (items) => items.map(mapMovementsResponse),
+            );
         } catch (error) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.REQUEST,
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : DEFAULT_ERROR_MESSAGE,
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleUnexpectedError(error);
         }
     }
 
@@ -129,35 +68,12 @@ export class MovementsService {
                 "GET",
                 `${this.endpoint}/${id}`,
             );
-            if (response.status === HTTP_STATUS.OK) {
-                return {
-                    success: true,
-                    data: mapMovementsResponse(
-                        response.data as BackendMovement,
-                    ),
-                };
-            } else {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.REQUEST,
-                        message: response.data as string,
-                        statusCode: response.status,
-                    },
-                };
-            }
+            return handleResponse<BackendMovement, Movement>(
+                response,
+                mapMovementsResponse,
+            );
         } catch (error) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.REQUEST,
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : DEFAULT_ERROR_MESSAGE,
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleUnexpectedError(error);
         }
     }
 
@@ -172,35 +88,12 @@ export class MovementsService {
                 `${this.endpoint}`,
                 movementToCreate,
             );
-            if (response.status === HTTP_STATUS.CREATED) {
-                return {
-                    success: true,
-                    data: mapMovementsResponse(
-                        response.data as BackendMovement,
-                    ),
-                };
-            } else {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.REQUEST,
-                        message: response.data as string,
-                        statusCode: response.status,
-                    },
-                };
-            }
+            return handleResponse<BackendMovement, Movement>(
+                response,
+                mapMovementsResponse,
+            );
         } catch (error) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.REQUEST,
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : DEFAULT_ERROR_MESSAGE,
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleUnexpectedError(error);
         }
     }
 
@@ -216,35 +109,13 @@ export class MovementsService {
                 `${this.endpoint}/${id}`,
                 movementToUpdate,
             );
-            if (response.status === HTTP_STATUS.OK) {
-                return {
-                    success: true,
-                    data: mapMovementsResponse(
-                        response.data as BackendMovement,
-                    ),
-                };
-            } else {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.REQUEST,
-                        message: response.data as string,
-                        statusCode: response.status,
-                    },
-                };
-            }
+
+            return handleResponse<BackendMovement, Movement>(
+                response,
+                mapMovementsResponse,
+            );
         } catch (error) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.REQUEST,
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : DEFAULT_ERROR_MESSAGE,
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleUnexpectedError(error);
         }
     }
 
@@ -254,33 +125,9 @@ export class MovementsService {
                 "DELETE",
                 `${this.endpoint}/${id}`,
             );
-            if (response.status === HTTP_STATUS.NO_CONTENT) {
-                return {
-                    success: true,
-                    data: undefined,
-                };
-            } else {
-                return {
-                    success: false,
-                    error: {
-                        error: ERROR_TYPES.REQUEST,
-                        message: response.data as string,
-                        statusCode: response.status,
-                    },
-                };
-            }
+            return handleResponse<void>(response);
         } catch (error) {
-            return {
-                success: false,
-                error: {
-                    error: ERROR_TYPES.REQUEST,
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : DEFAULT_ERROR_MESSAGE,
-                    statusCode: HTTP_STATUS.INTERNAL_ERROR,
-                },
-            };
+            return handleUnexpectedError(error);
         }
     }
 }
