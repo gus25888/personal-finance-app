@@ -251,13 +251,13 @@ const MovementList = ({
             <table className="movements-table">
                 <thead className="table-header">
                     <tr>
-                        <th className="table-header-cell">Eliminar</th>
-                        <th className="table-header-cell">Editar</th>
-                        <th className="table-header-cell">Categoría</th>
-                        <th className="table-header-cell">Tipo</th>
-                        <th className="table-header-cell">Fecha</th>
-                        <th className="table-header-cell">Descripción</th>
-                        <th className="table-header-cell">Monto</th>
+                        <th className="table-header-cell">Delete</th>
+                        <th className="table-header-cell">Edit</th>
+                        <th className="table-header-cell">Category</th>
+                        <th className="table-header-cell">Category Type</th>
+                        <th className="table-header-cell">Date</th>
+                        <th className="table-header-cell">Description</th>
+                        <th className="table-header-cell">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -269,7 +269,7 @@ const MovementList = ({
                                     onClick={() => {
                                         if (
                                             confirm(
-                                                `¿Eliminar movimiento '${movement.description}'?`,
+                                                `Do you want to delete movement '${movement.description}'?`,
                                             )
                                         ) {
                                             deleteMovement(movement.id);

@@ -5,4 +5,4 @@ export const ERROR_TYPES = {
     APPLICATION: "Application Error",
 } as const;
 
-export const DEFAULT_ERROR_MESSAGE = "Ha ocurrido un problema en la solicitud";
+export const DEFAULT_ERROR_MESSAGE = "There was a problem with the request";
