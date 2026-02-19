@@ -15,9 +15,48 @@ body {
   padding: 2rem;
 }
 
+.app-container {
+  min-height: 100vh;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: rgba(11, 11, 11, 0.945);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.app-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.app-main {
+  margin-top: 10px;
+}
+
 .app-title {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.8rem;
+  font-weight: 600;
+  grid-column: 2;
+  letter-spacing: 0.5px;
+  margin: 0;
   text-align: center;
-  margin-bottom: 20px;
+}
+
+.categories-button {
+  background-color: #445d7b;
+  border-radius: 6px;
+  border: 1px solid rgba(4, 55, 113, 0.97);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  grid-column: 3;
+  justify-self: end;
+  padding: 6px 12px;
+}
+
+.categories-button:hover {
+  background-color: #758eac;
 }
 
 /* Modal */
@@ -35,7 +74,6 @@ body {
 
 .modal-content {
   background-color: #1e1e1e;
-  /* gris oscuro, no negro puro */
   color: rgba(255, 255, 255, 0.92);
   width: 600px;
   max-width: 90%;

@@ -18,6 +18,7 @@ import {
     NOTIFICATION_TYPES,
     type NotificationData,
 } from "./types/notification";
+import Modal from "./components/common/Modal";
 
 function App(): JSX.Element {
     const [notification, setNotification] = useState<NotificationData | null>(
@@ -27,6 +28,10 @@ function App(): JSX.Element {
         setNotification(newNotification);
     };
     const onCloseNotification = () => setNotification(null);
+
+    const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
+    const openCategoriesModal = () => setIsCategoriesModalOpen(true);
+    const closeCategoriesModal = () => setIsCategoriesModalOpen(false);
 
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -110,34 +115,49 @@ function App(): JSX.Element {
     */
     return (
         <div className="app-container">
-            <h1 className="app-title">Personal Finances</h1>
-            {notification && (
-                <NotificationBanner
-                    notification={notification}
-                    onClose={onCloseNotification}
+            <header className="app-header">
+                <h1 className="app-title">Personal Finances</h1>
+                <button
+                    className="categories-button"
+                    onClick={openCategoriesModal}
+                >
+                    Categories
+                </button>
+                {notification && (
+                    <NotificationBanner
+                        notification={notification}
+                        onClose={onCloseNotification}
+                    />
+                )}
+            </header>
+            <main className="app-main">
+                <MovementForm
+                    key={movementBeingEdited?.id ?? "new"}
+                    movementToEdit={movementBeingEdited}
+                    onAddMovement={addMovement}
+                    onEditMovement={editMovement}
+                    onClearEditMovement={clearMovementToEdit}
+                    onNotify={onShowNotification}
+                    categories={categories}
                 />
-            )}
-            <MovementForm
-                key={movementBeingEdited?.id ?? "new"}
-                movementToEdit={movementBeingEdited}
-                onAddMovement={addMovement}
-                onEditMovement={editMovement}
-                onClearEditMovement={clearMovementToEdit}
-                onNotify={onShowNotification}
-                categories={categories}
-            />
-            <MovementList
-                onNotify={onShowNotification}
-                movementToEdit={movementBeingEdited}
-                onEditMovement={defineMovementToEdit}
-                onClearEditMovement={clearMovementToEdit}
-                registerCreateMovement={(fn) => {
-                    createMovementRef.current = fn;
-                }}
-                registerEditMovement={(fn) => {
-                    editMovementRef.current = fn;
-                }}
-                categories={categories}
+                <MovementList
+                    onNotify={onShowNotification}
+                    movementToEdit={movementBeingEdited}
+                    onEditMovement={defineMovementToEdit}
+                    onClearEditMovement={clearMovementToEdit}
+                    registerCreateMovement={(fn) => {
+                        createMovementRef.current = fn;
+                    }}
+                    registerEditMovement={(fn) => {
+                        editMovementRef.current = fn;
+                    }}
+                    categories={categories}
+                />
+            </main>
+            <Modal
+                isOpen={isCategoriesModalOpen}
+                onClose={closeCategoriesModal}
+                children={<div>TEST</div>}
             />
         </div>
     );
