@@ -2,7 +2,7 @@ import { useEffect, type JSX } from "react";
 import {
     NOTIFICATION_TYPES,
     type NotificationData,
-} from "../types/notification";
+} from "../../types/notification";
 
 type Props = {
     notification: NotificationData;

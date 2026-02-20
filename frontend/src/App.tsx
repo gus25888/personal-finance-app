@@ -5,10 +5,10 @@ import { useEffect, useRef, useState, type JSX } from "react";
 import { formatBackendError } from "./infrastructure/formatBackendErrors";
 import { handleApplicationError } from "./infrastructure/serviceResultHandlers";
 
-import MovementForm from "./components/MovementForm";
-import MovementList from "./components/MovementList";
-import NotificationBanner from "./components/NotificationBanner";
+import NotificationBanner from "./components/common/NotificationBanner";
 import Modal from "./components/common/Modal";
+import MovementForm from "./components/movements/MovementForm";
+import MovementList from "./components/movements/MovementList";
 import CategoriesModal from "./components/categories/CategoriesModal";
 
 import type { ServiceResult } from "./domain/common/types";

@@ -1,13 +1,13 @@
 import { useState, type JSX } from "react";
-import { formatBackendError } from "../infrastructure/formatBackendErrors";
-import type { ServiceResult } from "../domain/common/types";
-import { type Category } from "../domain/categories/types";
-import { type Movement, type NewMovement } from "../domain/movements/types";
-import { CATEGORY_TYPE_LABEL } from "../types";
+import { formatBackendError } from "../../infrastructure/formatBackendErrors";
+import type { ServiceResult } from "../../domain/common/types";
+import { type Category } from "../../domain/categories/types";
+import { type Movement, type NewMovement } from "../../domain/movements/types";
+import { CATEGORY_TYPE_LABEL } from "../../types";
 import {
     NOTIFICATION_TYPES,
     type NotificationData,
-} from "../types/notification";
+} from "../../types/notification";
 
 type Props = {
     movementToEdit: Movement | null;

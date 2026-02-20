@@ -6,8 +6,8 @@ import {
     CATEGORY_FILTER_ALL_LABEL,
     CATEGORY_TYPE_FILTER,
     CATEGORY_TYPE_FILTER_LABEL,
-} from "../types";
-import type { Category } from "../domain/categories/types";
+} from "../../types";
+import type { Category } from "../../domain/categories/types";
 
 type FiltersProps = {
     movementType: CategoryTypeFilter;

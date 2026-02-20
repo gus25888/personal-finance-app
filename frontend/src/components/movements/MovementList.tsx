@@ -6,19 +6,19 @@ import {
     CATEGORY_TYPE_LABEL,
     type CategoryFilter,
     type CategoryTypeFilter,
-} from "../types";
+} from "../../types";
 import {
     NOTIFICATION_TYPES,
     type NotificationData,
-} from "../types/notification";
+} from "../../types/notification";
 
-import { calculateTotals } from "../helpers/movements/";
-import { formatBackendError } from "../infrastructure/formatBackendErrors";
+import { calculateTotals } from "../../helpers/movements";
+import { formatBackendError } from "../../infrastructure/formatBackendErrors";
 
-import type { ServiceResult, BackendError } from "../domain/common/types";
-import type { Category, CategoryType } from "../domain/categories/types";
-import type { Movement, NewMovement } from "../domain/movements/types";
-import { movementsService } from "../domain/movements";
+import type { ServiceResult, BackendError } from "../../domain/common/types";
+import type { Category, CategoryType } from "../../domain/categories/types";
+import type { Movement, NewMovement } from "../../domain/movements/types";
+import { movementsService } from "../../domain/movements";
 
 import MovementListFilters from "./MovementListFilters";
 
