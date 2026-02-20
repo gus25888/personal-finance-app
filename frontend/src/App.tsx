@@ -8,6 +8,8 @@ import { handleApplicationError } from "./infrastructure/serviceResultHandlers";
 import MovementForm from "./components/MovementForm";
 import MovementList from "./components/MovementList";
 import NotificationBanner from "./components/NotificationBanner";
+import Modal from "./components/common/Modal";
+import CategoriesModal from "./components/categories/CategoriesModal";
 
 import type { ServiceResult } from "./domain/common/types";
 import type { Movement, NewMovement } from "./domain/movements/types";
@@ -18,7 +20,6 @@ import {
     NOTIFICATION_TYPES,
     type NotificationData,
 } from "./types/notification";
-import Modal from "./components/common/Modal";
 
 function App(): JSX.Element {
     const [notification, setNotification] = useState<NotificationData | null>(
@@ -157,7 +158,7 @@ function App(): JSX.Element {
             <Modal
                 isOpen={isCategoriesModalOpen}
                 onClose={closeCategoriesModal}
-                children={<div>TEST</div>}
+                children={<CategoriesModal />}
             />
         </div>
     );
