@@ -158,7 +158,17 @@ function App(): JSX.Element {
             <Modal
                 isOpen={isCategoriesModalOpen}
                 onClose={closeCategoriesModal}
-                children={<CategoriesModal />}
+                children={
+                    <CategoriesModal
+                        categories={categories}
+                        onEditCategory={function (): void {
+                            throw new Error("Function not implemented.");
+                        }}
+                        onDeleteCategory={function (): void {
+                            throw new Error("Function not implemented.");
+                        }}
+                    />
+                }
             />
         </div>
     );

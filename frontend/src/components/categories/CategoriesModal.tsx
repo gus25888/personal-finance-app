@@ -1,6 +1,18 @@
 import type { JSX } from "react";
+import CategoriesList from "./CategoriesList";
+import type { Category } from "../../domain/categories/types";
 
-const CategoriesModal = (): JSX.Element => {
+type Props = {
+    categories: Category[];
+    onEditCategory: () => void;
+    onDeleteCategory: () => void;
+};
+
+const CategoriesModal = ({
+    categories,
+    onEditCategory,
+    onDeleteCategory,
+}: Props): JSX.Element => {
     return (
         <>
             <h2>Categories</h2>
@@ -9,7 +21,11 @@ const CategoriesModal = (): JSX.Element => {
             </div>
             <hr />
             <div className="list-container">
-                <p>List... Coming Soon...</p>
+                <CategoriesList
+                    categories={categories}
+                    onEditCategory={onEditCategory}
+                    onDeleteCategory={onDeleteCategory}
+                />
             </div>
         </>
     );

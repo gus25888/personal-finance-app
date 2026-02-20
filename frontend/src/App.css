@@ -291,7 +291,8 @@ body {
   text-align: center;
 }
 
-.movements-table {
+.movements-table,
+.categories-table {
   width: 100%;
   border-radius: 5px;
   border-collapse: separate;
@@ -301,21 +302,25 @@ body {
 }
 
 /* Esquina superior izquierda */
+.categories-table thead tr:first-child th:first-child,
 .movements-table thead tr:first-child th:first-child {
   border-top-left-radius: 5px;
 }
 
 /* Esquina superior derecha */
+.categories-table thead tr:first-child th:last-child,
 .movements-table thead tr:first-child th:last-child {
   border-top-right-radius: 5px;
 }
 
 /* Esquina inferior izquierda */
+.categories-table tbody tr:last-child td:first-child,
 .movements-table tbody tr:last-child td:first-child {
   border-bottom-left-radius: 5px;
 }
 
 /* Esquina inferior derecha */
+.categories-table tbody tr:last-child td:last-child,
 .movements-table tbody tr:last-child td:last-child {
   border-bottom-right-radius: 5px;
 }
