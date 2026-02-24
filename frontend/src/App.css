@@ -281,6 +281,31 @@ body {
   color: #555;
 }
 
+.categories-form-row form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  /* opcional para pantallas pequeñas */
+}
+
+.categoryName-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.categoryType-field {
+  width: 160px;
+}
+
+.categories-form-row .form-button {
+  height: 38px;
+  white-space: nowrap;
+}
+
+
+/* Movements Table */
+
 .table-section {
   padding: 10px;
 }
