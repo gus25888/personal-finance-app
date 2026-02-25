@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useEffect, useRef, useState, type JSX } from "react";
+import { useCallback, useEffect, useRef, useState, type JSX } from "react";
 
 import { formatBackendError } from "./infrastructure/formatBackendErrors";
 import { handleApplicationError } from "./infrastructure/serviceResultHandlers";
@@ -13,7 +13,7 @@ import CategoriesModal from "./components/categories/CategoriesModal";
 
 import type { ServiceResult } from "./domain/common/types";
 import type { Movement, NewMovement } from "./domain/movements/types";
-import type { Category } from "./domain/categories/types";
+import type { Category, NewCategory } from "./domain/categories/types";
 import { categoriesService } from "./domain/categories";
 
 import {
@@ -52,6 +52,29 @@ function App(): JSX.Element {
 
         fetchCategories();
     }, []);
+
+    const onCreateCategory = useCallback(
+        async (category: NewCategory): Promise<ServiceResult<Category>> => {
+            const result = await categoriesService.createCategory(category);
+
+            if (!result.success) {
+                return {
+                    success: false,
+                    error: result.error,
+                };
+            }
+
+            const categoryCreated = result.data;
+
+            setCategories((prevState) => [...prevState, categoryCreated]);
+
+            return {
+                success: true,
+                data: categoryCreated,
+            };
+        },
+        [],
+    );
 
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
@@ -161,6 +184,8 @@ function App(): JSX.Element {
                 children={
                     <CategoriesModal
                         categories={categories}
+                        onNotify={onShowNotification}
+                        onCreateCategory={onCreateCategory}
                         onEditCategory={function (): void {
                             throw new Error("Function not implemented.");
                         }}

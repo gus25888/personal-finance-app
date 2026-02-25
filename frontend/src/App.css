@@ -241,6 +241,12 @@ body {
   box-shadow: 0 0 4px rgba(144, 238, 144, 0.7);
 }
 
+.form-button:disabled {
+  background-color: rgb(88, 121, 88);
+  border: 1px rgb(0, 46, 13) solid;
+  color: rgb(76, 92, 80);
+}
+
 .form-button.editing {
   background-color: rgb(255, 165, 0);
   border-color: rgb(200, 120, 0);
