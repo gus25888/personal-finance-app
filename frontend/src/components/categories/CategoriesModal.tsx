@@ -24,7 +24,7 @@ type Props = {
         category: NewCategory,
     ) => Promise<ServiceResult<Category>>;
     onEditCategory: () => void;
-    onDeleteCategory: () => void;
+    onDeleteCategory: (id: number) => Promise<ServiceResult<void>>;
 };
 
 const CategoriesModal = ({

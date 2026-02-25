@@ -1,11 +1,13 @@
 import type { JSX } from "react";
-import type { Category } from "../../domain/categories/types";
+
 import { CATEGORY_TYPE_LABEL } from "../../types";
+import type { ServiceResult } from "../../domain/common/types";
+import type { Category } from "../../domain/categories/types";
 
 type Props = {
     categories: Category[];
     onEditCategory: () => void;
-    onDeleteCategory: () => void;
+    onDeleteCategory: (id: number) => Promise<ServiceResult<void>>;
 };
 
 const CategoriesList = ({
@@ -38,7 +40,7 @@ const CategoriesList = ({
                                                 `Do you want to delete category '${category.name}'?`,
                                             )
                                         ) {
-                                            onDeleteCategory();
+                                            onDeleteCategory(category.id);
                                         }
                                     }}
                                 >

@@ -53,7 +53,7 @@ function App(): JSX.Element {
         fetchCategories();
     }, []);
 
-    const onCreateCategory = useCallback(
+    const addCategory = useCallback(
         async (category: NewCategory): Promise<ServiceResult<Category>> => {
             const result = await categoriesService.createCategory(category);
 
@@ -75,6 +75,36 @@ function App(): JSX.Element {
         },
         [],
     );
+
+    const removeCategory = async (id: number): Promise<ServiceResult<void>> => {
+        const result = await categoriesService.deleteCategory(id);
+
+        if (!result.success) {
+            onShowNotification({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: formatBackendError(result.error),
+            });
+
+            return {
+                success: false,
+                error: result.error,
+            };
+        }
+
+        setCategories((prevState) =>
+            prevState.filter((prev) => prev.id !== id),
+        );
+
+        onShowNotification({
+            type: NOTIFICATION_TYPES.SUCCESS,
+            message: "Category deleted successfully",
+        });
+
+        return {
+            success: true,
+            data: undefined,
+        };
+    };
 
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
@@ -185,13 +215,11 @@ function App(): JSX.Element {
                     <CategoriesModal
                         categories={categories}
                         onNotify={onShowNotification}
-                        onCreateCategory={onCreateCategory}
+                        onCreateCategory={addCategory}
                         onEditCategory={function (): void {
                             throw new Error("Function not implemented.");
                         }}
-                        onDeleteCategory={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
+                        onDeleteCategory={removeCategory}
                     />
                 }
             />
