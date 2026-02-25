@@ -19,6 +19,14 @@ import {
   MIN_DATE,
 } from '../constants/movements.constants';
 
+const formatDateToDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = date.getMonth().toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 export class CreateMovementDto {
   @ApiProperty({
     example: 'Chocolate bar',
@@ -40,8 +48,12 @@ export class CreateMovementDto {
   })
   @Type(() => Date)
   @IsDate()
-  @MinDate(MIN_DATE)
-  @MaxDate(new Date())
+  @MinDate(MIN_DATE, {
+    message: `Date must be greater than or equal to ${formatDateToDDMMYYYY(MIN_DATE)}`,
+  })
+  @MaxDate(new Date(), {
+    message: `Date must be less than or equal to ${formatDateToDDMMYYYY(new Date())}}`,
+  })
   date: Date;
 
   @ApiProperty({
