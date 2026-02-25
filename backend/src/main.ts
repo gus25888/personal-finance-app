@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 interface PackageJson {
   name: string;
@@ -26,6 +27,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const packageJson: PackageJson = JSON.parse(
     readFileSync(join(process.cwd(), 'package.json'), 'utf8'),
