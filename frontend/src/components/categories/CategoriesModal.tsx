@@ -21,7 +21,10 @@ type Props = {
     onCreateCategory: (
         category: NewCategory,
     ) => Promise<ServiceResult<Category>>;
-    onEditCategory: () => void;
+    onEditCategory: (
+        id: number,
+        category: Partial<Category>,
+    ) => Promise<ServiceResult<Category>>;
     onDeleteCategory: (id: number) => Promise<ServiceResult<void>>;
 };
 
@@ -130,6 +133,7 @@ const CategoriesModal = ({
                     categories={categories}
                     onEditCategory={onEditCategory}
                     onDeleteCategory={onDeleteCategory}
+                    onNotify={onNotify}
                 />
             </div>
         </>

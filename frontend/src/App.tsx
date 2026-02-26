@@ -85,6 +85,43 @@ function App(): JSX.Element {
         [],
     );
 
+    const editCategory = async (
+        id: number,
+        category: Partial<Category>,
+    ): Promise<ServiceResult<Category>> => {
+        const result = await categoriesService.updateCategory(id, category);
+
+        if (!result.success) {
+            onShowNotification({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: result.error,
+            });
+
+            return {
+                success: false,
+                error: result.error,
+            };
+        }
+
+        const categoryUpdated = result.data;
+
+        setCategories((prevState) =>
+            prevState.map((prev) =>
+                prev.id === categoryUpdated.id ? categoryUpdated : prev,
+            ),
+        );
+
+        onShowNotification({
+            type: NOTIFICATION_TYPES.SUCCESS,
+            message: "Category updated successfully",
+        });
+
+        return {
+            success: true,
+            data: categoryUpdated,
+        };
+    };
+
     const removeCategory = async (id: number): Promise<ServiceResult<void>> => {
         const result = await categoriesService.deleteCategory(id);
 
@@ -225,9 +262,7 @@ function App(): JSX.Element {
                         categories={categories}
                         onNotify={onShowNotification}
                         onCreateCategory={addCategory}
-                        onEditCategory={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
+                        onEditCategory={editCategory}
                         onDeleteCategory={removeCategory}
                     />
                 }
