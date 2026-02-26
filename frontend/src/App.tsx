@@ -2,7 +2,6 @@ import "./App.css";
 
 import { useCallback, useEffect, useRef, useState, type JSX } from "react";
 
-import { formatBackendError } from "./infrastructure/formatBackendErrors";
 import { handleApplicationError } from "./infrastructure/serviceResultHandlers";
 
 import NotificationBanner from "./components/common/NotificationBanner";
@@ -45,7 +44,7 @@ function App(): JSX.Element {
             } else {
                 onShowNotification({
                     type: NOTIFICATION_TYPES.ERROR,
-                    message: formatBackendError(result.error),
+                    message: result.error,
                 });
             }
         };
@@ -82,7 +81,7 @@ function App(): JSX.Element {
         if (!result.success) {
             onShowNotification({
                 type: NOTIFICATION_TYPES.ERROR,
-                message: formatBackendError(result.error),
+                message: result.error,
             });
 
             return {

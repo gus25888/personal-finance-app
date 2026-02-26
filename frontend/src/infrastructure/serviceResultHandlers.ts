@@ -1,7 +1,7 @@
-import type { ServiceResult } from "../domain/common/types";
-import { ERROR_TYPES, DEFAULT_ERROR_MESSAGE } from "../helpers/common/errors";
+import type { BackendError, ServiceResult } from "../domain/common/types";
+import { DEFAULT_ERROR_MESSAGE } from "../helpers/common/errors";
 import type { HttpResponse } from "./HttpRequestHandler";
-import { isSuccessStatus, HTTP_STATUS } from "./httpStatusCodes";
+import { isSuccessStatus } from "./httpStatusCodes";
 
 export function handleResponse<TIn, TOut = TIn>(
     response: HttpResponse,
@@ -16,13 +16,10 @@ export function handleResponse<TIn, TOut = TIn>(
                 : (rawData as unknown as TOut),
         };
     } else {
+        const { message } = response.data as BackendError;
         return {
             success: false,
-            error: {
-                error: ERROR_TYPES.REQUEST,
-                message: response.data as string,
-                statusCode: response.status,
-            },
+            error: message,
         };
     }
 }
@@ -30,33 +27,20 @@ export function handleResponse<TIn, TOut = TIn>(
 export function handleUnexpectedError(error: unknown): ServiceResult<never> {
     return {
         success: false,
-        error: {
-            error: ERROR_TYPES.REQUEST,
-            message:
-                error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE,
-            statusCode: HTTP_STATUS.INTERNAL_ERROR,
-        },
+        error: error instanceof Error ? error.message : DEFAULT_ERROR_MESSAGE,
     };
 }
 
 export function handleValidationError(message: string): ServiceResult<never> {
     return {
         success: false,
-        error: {
-            error: ERROR_TYPES.VALIDATION,
-            message,
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-        },
+        error: message,
     };
 }
 
 export function handleApplicationError(message: string): ServiceResult<never> {
     return {
         success: false,
-        error: {
-            error: ERROR_TYPES.APPLICATION,
-            message,
-            statusCode: HTTP_STATUS.INTERNAL_ERROR,
-        },
+        error: message,
     };
 }

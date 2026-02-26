@@ -1,5 +1,5 @@
 import { useState, type JSX } from "react";
-import { formatBackendError } from "../../infrastructure/formatBackendErrors";
+
 import type { ServiceResult } from "../../domain/common/types";
 import { type Category } from "../../domain/categories/types";
 import { type Movement, type NewMovement } from "../../domain/movements/types";
@@ -125,7 +125,7 @@ const MovementForm = ({
             } else {
                 onNotify({
                     type: NOTIFICATION_TYPES.ERROR,
-                    message: formatBackendError(result.error),
+                    message: result.error,
                 });
             }
         } else {
@@ -147,7 +147,7 @@ const MovementForm = ({
             } else {
                 onNotify({
                     type: NOTIFICATION_TYPES.ERROR,
-                    message: formatBackendError(result.error),
+                    message: result.error,
                 });
             }
         }

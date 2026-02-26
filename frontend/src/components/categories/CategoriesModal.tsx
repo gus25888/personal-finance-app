@@ -1,7 +1,5 @@
 import { useState, type JSX } from "react";
 
-import { formatBackendError } from "../../infrastructure/formatBackendErrors";
-
 import { CATEGORY_TYPE_LABEL } from "../../types";
 import type { ServiceResult } from "../../domain/common/types";
 import {
@@ -85,7 +83,7 @@ const CategoriesModal = ({
             setIsCreating(false);
             onNotify({
                 type: NOTIFICATION_TYPES.ERROR,
-                message: formatBackendError(result.error),
+                message: result.error,
             });
         }
     };
