@@ -57,6 +57,11 @@ function App(): JSX.Element {
             const result = await categoriesService.createCategory(category);
 
             if (!result.success) {
+                onShowNotification({
+                    type: NOTIFICATION_TYPES.ERROR,
+                    message: result.error,
+                });
+
                 return {
                     success: false,
                     error: result.error,
@@ -66,6 +71,11 @@ function App(): JSX.Element {
             const categoryCreated = result.data;
 
             setCategories((prevState) => [...prevState, categoryCreated]);
+
+            onShowNotification({
+                type: NOTIFICATION_TYPES.SUCCESS,
+                message: "Category created successfully",
+            });
 
             return {
                 success: true,

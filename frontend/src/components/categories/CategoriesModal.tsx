@@ -75,16 +75,8 @@ const CategoriesModal = ({
 
         if (result.success) {
             resetForm();
-            onNotify({
-                type: NOTIFICATION_TYPES.SUCCESS,
-                message: "Category created successfully",
-            });
         } else {
             setIsCreating(false);
-            onNotify({
-                type: NOTIFICATION_TYPES.ERROR,
-                message: result.error,
-            });
         }
     };
 
