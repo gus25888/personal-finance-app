@@ -12,13 +12,13 @@ import CategoriesModal from "./components/categories/CategoriesModal";
 
 import type { ServiceResult } from "./domain/common/types";
 import type { Movement, NewMovement } from "./domain/movements/types";
-import type { Category, NewCategory } from "./domain/categories/types";
-import { categoriesService } from "./domain/categories";
 
 import {
     NOTIFICATION_TYPES,
     type NotificationData,
 } from "./types/notification";
+import { useCategories } from "./hooks/useCategories";
+import type { Category, NewCategory } from "./domain/categories/types";
 
 function App(): JSX.Element {
     const [notification, setNotification] = useState<NotificationData | null>(
@@ -33,124 +33,76 @@ function App(): JSX.Element {
     const openCategoriesModal = () => setIsCategoriesModalOpen(true);
     const closeCategoriesModal = () => setIsCategoriesModalOpen(false);
 
-    const [categories, setCategories] = useState<Category[]>([]);
+    const {
+        categories,
+        loadingCategories,
+        loadCategories,
+        addCategory,
+        editCategory,
+        removeCategory,
+    } = useCategories();
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const result = await categoriesService.getCategories();
+    const fetchCategories = useCallback(async () => {
+        const result: ServiceResult<Category[]> = await loadCategories();
 
-            if (result.success) {
-                setCategories(result.data ?? []);
-            } else {
-                onShowNotification({
-                    type: NOTIFICATION_TYPES.ERROR,
-                    message: result.error,
-                });
-            }
-        };
+        if (!result.success) {
+            setNotification({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: result.error,
+            });
+        }
+    }, [loadCategories]);
 
-        fetchCategories();
-    }, []);
-
-    const addCategory = useCallback(
-        async (category: NewCategory): Promise<ServiceResult<Category>> => {
-            const result = await categoriesService.createCategory(category);
-
-            if (!result.success) {
-                onShowNotification({
-                    type: NOTIFICATION_TYPES.ERROR,
-                    message: result.error,
-                });
-
-                return {
-                    success: false,
-                    error: result.error,
-                };
-            }
-
-            const categoryCreated = result.data;
-
-            setCategories((prevState) => [...prevState, categoryCreated]);
-
-            onShowNotification({
+    const onCreateCategory = async (category: NewCategory) => {
+        const result = await addCategory(category);
+        if (result.success) {
+            setNotification({
                 type: NOTIFICATION_TYPES.SUCCESS,
                 message: "Category created successfully",
             });
-
-            return {
-                success: true,
-                data: categoryCreated,
-            };
-        },
-        [],
-    );
-
-    const editCategory = async (
-        id: number,
-        category: Partial<Category>,
-    ): Promise<ServiceResult<Category>> => {
-        const result = await categoriesService.updateCategory(id, category);
-
-        if (!result.success) {
-            onShowNotification({
+        } else {
+            setNotification({
                 type: NOTIFICATION_TYPES.ERROR,
                 message: result.error,
             });
-
-            return {
-                success: false,
-                error: result.error,
-            };
         }
-
-        const categoryUpdated = result.data;
-
-        setCategories((prevState) =>
-            prevState.map((prev) =>
-                prev.id === categoryUpdated.id ? categoryUpdated : prev,
-            ),
-        );
-
-        onShowNotification({
-            type: NOTIFICATION_TYPES.SUCCESS,
-            message: "Category updated successfully",
-        });
-
-        return {
-            success: true,
-            data: categoryUpdated,
-        };
+        return result;
     };
-
-    const removeCategory = async (id: number): Promise<ServiceResult<void>> => {
-        const result = await categoriesService.deleteCategory(id);
-
-        if (!result.success) {
-            onShowNotification({
+    const onEditCategory = async (id: number, category: Partial<Category>) => {
+        const result = await editCategory(id, category);
+        if (result.success) {
+            setNotification({
+                type: NOTIFICATION_TYPES.SUCCESS,
+                message: "Category updated successfully",
+            });
+        } else {
+            setNotification({
                 type: NOTIFICATION_TYPES.ERROR,
                 message: result.error,
             });
-
-            return {
-                success: false,
-                error: result.error,
-            };
         }
-
-        setCategories((prevState) =>
-            prevState.filter((prev) => prev.id !== id),
-        );
-
-        onShowNotification({
-            type: NOTIFICATION_TYPES.SUCCESS,
-            message: "Category deleted successfully",
-        });
-
-        return {
-            success: true,
-            data: undefined,
-        };
+        return result;
     };
+
+    const onDeleteCategory = async (id: number) => {
+        const result = await removeCategory(id);
+        if (result.success) {
+            setNotification({
+                type: NOTIFICATION_TYPES.SUCCESS,
+                message: "Category deleted successfully",
+            });
+        } else {
+            setNotification({
+                type: NOTIFICATION_TYPES.ERROR,
+                message: result.error,
+            });
+        }
+        return result;
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
 
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
@@ -231,28 +183,33 @@ function App(): JSX.Element {
                 )}
             </header>
             <main className="app-main">
-                <MovementForm
-                    key={movementBeingEdited?.id ?? "new"}
-                    movementToEdit={movementBeingEdited}
-                    onAddMovement={addMovement}
-                    onEditMovement={editMovement}
-                    onClearEditMovement={clearMovementToEdit}
-                    onNotify={onShowNotification}
-                    categories={categories}
-                />
-                <MovementList
-                    onNotify={onShowNotification}
-                    movementToEdit={movementBeingEdited}
-                    onEditMovement={defineMovementToEdit}
-                    onClearEditMovement={clearMovementToEdit}
-                    registerCreateMovement={(fn) => {
-                        createMovementRef.current = fn;
-                    }}
-                    registerEditMovement={(fn) => {
-                        editMovementRef.current = fn;
-                    }}
-                    categories={categories}
-                />
+                {loadingCategories && <div>Loading...</div>}
+                {!loadingCategories && (
+                    <>
+                        <MovementForm
+                            key={movementBeingEdited?.id ?? "new"}
+                            movementToEdit={movementBeingEdited}
+                            onAddMovement={addMovement}
+                            onEditMovement={editMovement}
+                            onClearEditMovement={clearMovementToEdit}
+                            onNotify={onShowNotification}
+                            categories={categories}
+                        />
+                        <MovementList
+                            onNotify={onShowNotification}
+                            movementToEdit={movementBeingEdited}
+                            onEditMovement={defineMovementToEdit}
+                            onClearEditMovement={clearMovementToEdit}
+                            registerCreateMovement={(fn) => {
+                                createMovementRef.current = fn;
+                            }}
+                            registerEditMovement={(fn) => {
+                                editMovementRef.current = fn;
+                            }}
+                            categories={categories}
+                        />
+                    </>
+                )}
             </main>
             <Modal
                 isOpen={isCategoriesModalOpen}
@@ -261,9 +218,9 @@ function App(): JSX.Element {
                     <CategoriesModal
                         categories={categories}
                         onNotify={onShowNotification}
-                        onCreateCategory={addCategory}
-                        onEditCategory={editCategory}
-                        onDeleteCategory={removeCategory}
+                        onCreateCategory={onCreateCategory}
+                        onEditCategory={onEditCategory}
+                        onDeleteCategory={onDeleteCategory}
                     />
                 }
             />
