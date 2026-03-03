@@ -17,7 +17,7 @@ type Props = {
     onEditCategory: (
         id: number,
         category: Partial<Category>,
-    ) => Promise<ServiceResult<Category>>;
+    ) => Promise<ServiceResult<void>>;
     onDeleteCategory: (id: number) => Promise<ServiceResult<void>>;
     onNotify: (notificationData: NotificationData) => void;
 };

@@ -18,13 +18,11 @@ import CategoriesList from "./CategoriesList";
 type Props = {
     categories: Category[];
     onNotify: (notificationData: NotificationData) => void;
-    onCreateCategory: (
-        category: NewCategory,
-    ) => Promise<ServiceResult<Category>>;
+    onCreateCategory: (category: NewCategory) => Promise<ServiceResult<void>>;
     onEditCategory: (
         id: number,
         category: Partial<Category>,
-    ) => Promise<ServiceResult<Category>>;
+    ) => Promise<ServiceResult<void>>;
     onDeleteCategory: (id: number) => Promise<ServiceResult<void>>;
 };
 

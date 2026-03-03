@@ -9,7 +9,7 @@ export const useCategories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
 
-    const loadCategories: () => Promise<ServiceResult<Category[]>> =
+    const loadCategories: () => Promise<ServiceResult<void>> =
         useCallback(async () => {
             try {
                 setLoadingCategories(true);
@@ -20,7 +20,7 @@ export const useCategories = () => {
                     setCategories(result.data ?? []);
                     return {
                         success: true,
-                        data: result.data,
+                        data: undefined,
                     };
                 } else {
                     return {
@@ -34,7 +34,7 @@ export const useCategories = () => {
         }, []);
 
     const addCategory = useCallback(
-        async (category: NewCategory): Promise<ServiceResult<Category>> => {
+        async (category: NewCategory): Promise<ServiceResult<void>> => {
             const result = await categoriesService.createCategory(category);
 
             if (!result.success) {
@@ -50,7 +50,7 @@ export const useCategories = () => {
 
             return {
                 success: true,
-                data: categoryCreated,
+                data: undefined,
             };
         },
         [],
@@ -60,7 +60,7 @@ export const useCategories = () => {
         async (
             id: number,
             category: Partial<Category>,
-        ): Promise<ServiceResult<Category>> => {
+        ): Promise<ServiceResult<void>> => {
             const result = await categoriesService.updateCategory(id, category);
 
             if (!result.success) {
@@ -80,7 +80,7 @@ export const useCategories = () => {
 
             return {
                 success: true,
-                data: categoryUpdated,
+                data: undefined,
             };
         },
         [],

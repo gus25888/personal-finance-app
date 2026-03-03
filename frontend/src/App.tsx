@@ -29,6 +29,30 @@ function App(): JSX.Element {
     };
     const onCloseNotification = () => setNotification(null);
 
+    const handleServiceOperation = useCallback(
+        async (
+            operation: () => Promise<ServiceResult<void>>,
+            showSuccessMessage: boolean = true,
+        ): Promise<ServiceResult<void>> => {
+            const result = await operation();
+            if (result.success) {
+                if (showSuccessMessage) {
+                    setNotification({
+                        type: NOTIFICATION_TYPES.SUCCESS,
+                        message: "Process completed successfully",
+                    });
+                }
+            } else {
+                setNotification({
+                    type: NOTIFICATION_TYPES.ERROR,
+                    message: result.error,
+                });
+            }
+            return result;
+        },
+        [],
+    );
+
     const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
     const openCategoriesModal = () => setIsCategoriesModalOpen(true);
     const closeCategoriesModal = () => setIsCategoriesModalOpen(false);
@@ -42,67 +66,18 @@ function App(): JSX.Element {
         removeCategory,
     } = useCategories();
 
-    const fetchCategories = useCallback(async () => {
-        const result: ServiceResult<Category[]> = await loadCategories();
+    const onCreateCategory = async (category: NewCategory) =>
+        handleServiceOperation(() => addCategory(category));
 
-        if (!result.success) {
-            setNotification({
-                type: NOTIFICATION_TYPES.ERROR,
-                message: result.error,
-            });
-        }
-    }, [loadCategories]);
+    const onEditCategory = async (id: number, category: Partial<Category>) =>
+        handleServiceOperation(() => editCategory(id, category));
 
-    const onCreateCategory = async (category: NewCategory) => {
-        const result = await addCategory(category);
-        if (result.success) {
-            setNotification({
-                type: NOTIFICATION_TYPES.SUCCESS,
-                message: "Category created successfully",
-            });
-        } else {
-            setNotification({
-                type: NOTIFICATION_TYPES.ERROR,
-                message: result.error,
-            });
-        }
-        return result;
-    };
-    const onEditCategory = async (id: number, category: Partial<Category>) => {
-        const result = await editCategory(id, category);
-        if (result.success) {
-            setNotification({
-                type: NOTIFICATION_TYPES.SUCCESS,
-                message: "Category updated successfully",
-            });
-        } else {
-            setNotification({
-                type: NOTIFICATION_TYPES.ERROR,
-                message: result.error,
-            });
-        }
-        return result;
-    };
-
-    const onDeleteCategory = async (id: number) => {
-        const result = await removeCategory(id);
-        if (result.success) {
-            setNotification({
-                type: NOTIFICATION_TYPES.SUCCESS,
-                message: "Category deleted successfully",
-            });
-        } else {
-            setNotification({
-                type: NOTIFICATION_TYPES.ERROR,
-                message: result.error,
-            });
-        }
-        return result;
-    };
+    const onDeleteCategory = async (id: number) =>
+        handleServiceOperation(() => removeCategory(id));
 
     useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
+        handleServiceOperation(() => loadCategories(), false);
+    }, [handleServiceOperation, loadCategories]);
 
     const [movementBeingEdited, setMovementBeingEdited] =
         useState<Movement | null>(null);
