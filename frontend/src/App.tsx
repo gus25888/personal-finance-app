@@ -75,7 +75,14 @@ function App(): JSX.Element {
     const onDeleteCategory = async (id: number) =>
         handleServiceOperation(() => removeCategory(id));
 
+    /*
+     We intentionally trigger a notification via handleServiceOperation on initial load.
+     This causes a state update inside useEffect, which is valid in this case
+     because it's a controlled async side-effect (data fetching + notification).
+     The ESLint rule react-hooks/set-state-in-effect is disabled here by design.
+    */
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         handleServiceOperation(() => loadCategories(), false);
     }, [handleServiceOperation, loadCategories]);
 
