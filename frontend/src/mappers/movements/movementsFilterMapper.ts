@@ -9,9 +9,11 @@ const filterFields = {
     description: "description",
 };
 
-export const getMovementsFilter = (filterValues: MovementFilter) => {
+export const getMovementsFilter = (filters: MovementFilter) => {
     let fieldsAggregated = 0;
     let formattedFilter = "";
+
+    const filterValues = { ...filters };
 
     if (
         filterValues.startDate === undefined &&

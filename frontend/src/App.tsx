@@ -90,13 +90,11 @@ function App(): JSX.Element {
     };
 
     const createMovementRef =
-        useRef<(movement: NewMovement) => Promise<ServiceResult<Movement>>>(
-            null,
-        );
+        useRef<(movement: NewMovement) => Promise<ServiceResult<void>>>(null);
 
     const addMovement = async (
         movement: NewMovement,
-    ): Promise<ServiceResult<Movement>> => {
+    ): Promise<ServiceResult<void>> => {
         if (!createMovementRef.current) {
             return handleApplicationError(
                 "The Application is not ready to create movements",
@@ -111,13 +109,13 @@ function App(): JSX.Element {
             (
                 id: number,
                 movement: Partial<Movement>,
-            ) => Promise<ServiceResult<Movement>>
+            ) => Promise<ServiceResult<void>>
         >(null);
 
     const editMovement = async (
         id: number,
         movement: Partial<Movement>,
-    ): Promise<ServiceResult<Movement>> => {
+    ): Promise<ServiceResult<void>> => {
         if (!editMovementRef.current) {
             return handleApplicationError(
                 "The Application is not ready to edit movements",
@@ -171,7 +169,7 @@ function App(): JSX.Element {
                             categories={categories}
                         />
                         <MovementList
-                            onNotify={onShowNotification}
+                            onHandleServiceOperation={handleServiceOperation}
                             movementToEdit={movementBeingEdited}
                             onEditMovement={defineMovementToEdit}
                             onClearEditMovement={clearMovementToEdit}

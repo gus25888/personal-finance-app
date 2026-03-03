@@ -11,11 +11,11 @@ import {
 
 type Props = {
     movementToEdit: Movement | null;
-    onAddMovement: (movement: NewMovement) => Promise<ServiceResult<Movement>>;
+    onAddMovement: (movement: NewMovement) => Promise<ServiceResult<void>>;
     onEditMovement: (
         id: number,
         movement: Partial<Movement>,
-    ) => Promise<ServiceResult<Movement>>;
+    ) => Promise<ServiceResult<void>>;
     onClearEditMovement: () => void;
     onNotify: (notificationData: NotificationData) => void;
     categories: Category[];
@@ -118,15 +118,6 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                onNotify({
-                    type: NOTIFICATION_TYPES.SUCCESS,
-                    message: "Movement updated successfully",
-                });
-            } else {
-                onNotify({
-                    type: NOTIFICATION_TYPES.ERROR,
-                    message: result.error,
-                });
             }
         } else {
             const newMovement: NewMovement = {
@@ -140,22 +131,15 @@ const MovementForm = ({
 
             if (result.success) {
                 resetForm();
-                onNotify({
-                    type: NOTIFICATION_TYPES.SUCCESS,
-                    message: "Movement created successfully",
-                });
-            } else {
-                onNotify({
-                    type: NOTIFICATION_TYPES.ERROR,
-                    message: result.error,
-                });
             }
         }
     };
 
     return (
         <div className="form-section">
-            <p className="form-title">Enter a new Movement</p>
+            <p className="form-title">
+                {movementToEdit ? "Edit a Movement" : "Enter a new Movement"}
+            </p>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label className="form-label" htmlFor="movementDate">

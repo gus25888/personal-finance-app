@@ -1,51 +1,60 @@
 import type { JSX } from "react";
 import {
-    type CategoryFilter,
-    type CategoryTypeFilter,
     CATEGORY_FILTER_ALL,
     CATEGORY_FILTER_ALL_LABEL,
     CATEGORY_TYPE_FILTER,
     CATEGORY_TYPE_FILTER_LABEL,
 } from "../../types";
-import type { Category } from "../../domain/categories/types";
+import type { Category, CategoryType } from "../../domain/categories/types";
+import type { MovementFilter } from "../../domain/movements/types";
+
+// Explicación de onChangeFilter:
+// En este punto con "extends keyof" se obtienen las claves de MovementFilter: "startDate", "categoryType", etc. como una unión de tipos, es decir, es igual a "startDate" | "categoryType" ..., lo cual se representa con la variable K.
+// Esta variable se usa como base para definir la "key" esperada como parámetro, lo cual permite hacerlo extensible, ya que solo hay que modificar el type, en caso de querer agregar o modificar uno.
+// Además, esta key se utiliza para definir el tipo del valor a esperar en la función, lo cual asegura que se envíe el tipo correcto de dato para la key que se está llenando, por ej. un number para CategoryId.
+// Esto se puede denominar Tipado Dinámico Dependiente.
 
 type FiltersProps = {
-    movementType: CategoryTypeFilter;
-    setMovementType: React.Dispatch<React.SetStateAction<CategoryTypeFilter>>;
-    movementCategory: CategoryFilter;
-    setMovementCategory: React.Dispatch<React.SetStateAction<CategoryFilter>>;
-    movementStartDate: string;
-    setMovementStartDate: React.Dispatch<React.SetStateAction<string>>;
-    movementEndDate: string;
-    setMovementEndDate: React.Dispatch<React.SetStateAction<string>>;
+    filters: MovementFilter;
+    onChangeFilter: <K extends keyof MovementFilter>(
+        key: K,
+        value: MovementFilter[K],
+    ) => void;
     categories: Category[];
 };
 
 const MovementListFilters = ({
-    movementType,
-    setMovementType,
-    movementCategory,
-    setMovementCategory,
-    movementStartDate,
-    setMovementStartDate,
-    movementEndDate,
-    setMovementEndDate,
+    filters,
+    onChangeFilter,
     categories,
 }: FiltersProps): JSX.Element => {
     const onChangeMovementType = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setMovementType(event.target.value as CategoryTypeFilter);
+        onChangeFilter(
+            "categoryType",
+            event.target.value === CATEGORY_TYPE_FILTER.ALL
+                ? undefined
+                : (event.target.value as CategoryType),
+        );
 
     const onChangeMovementCategory = (
         event: React.ChangeEvent<HTMLSelectElement>,
-    ) => setMovementCategory(event.target.value as CategoryFilter);
+    ) =>
+        onChangeFilter(
+            "categoryID",
+            event.target.value === CATEGORY_FILTER_ALL
+                ? undefined
+                : Number(event.target.value),
+        );
 
     const onChangeMovementStartDate = (
         event: React.ChangeEvent<HTMLInputElement>,
-    ) => setMovementStartDate(event.target.value);
+    ) => {
+        onChangeFilter("startDate", event.target.value || undefined);
+    };
 
     const onChangeMovementEndDate = (
         event: React.ChangeEvent<HTMLInputElement>,
-    ) => setMovementEndDate(event.target.value);
+    ) => onChangeFilter("endDate", event.target.value || undefined);
 
     return (
         <>
@@ -55,7 +64,11 @@ const MovementListFilters = ({
                         type="radio"
                         name="movementTypeFilter"
                         value={CATEGORY_TYPE_FILTER.ALL}
-                        checked={movementType === CATEGORY_TYPE_FILTER.ALL}
+                        checked={
+                            (filters.categoryType ||
+                                CATEGORY_TYPE_FILTER.ALL) ===
+                            CATEGORY_TYPE_FILTER.ALL
+                        }
                         onChange={onChangeMovementType}
                     />
                     {CATEGORY_TYPE_FILTER_LABEL.all}
@@ -65,7 +78,9 @@ const MovementListFilters = ({
                         type="radio"
                         name="movementTypeFilter"
                         value={CATEGORY_TYPE_FILTER.INCOME}
-                        checked={movementType === CATEGORY_TYPE_FILTER.INCOME}
+                        checked={
+                            filters.categoryType === CATEGORY_TYPE_FILTER.INCOME
+                        }
                         onChange={onChangeMovementType}
                     />
                     {CATEGORY_TYPE_FILTER_LABEL.income}
@@ -75,7 +90,10 @@ const MovementListFilters = ({
                         type="radio"
                         name="movementTypeFilter"
                         value={CATEGORY_TYPE_FILTER.EXPENSE}
-                        checked={movementType === CATEGORY_TYPE_FILTER.EXPENSE}
+                        checked={
+                            filters.categoryType ===
+                            CATEGORY_TYPE_FILTER.EXPENSE
+                        }
                         onChange={onChangeMovementType}
                     />
                     {CATEGORY_TYPE_FILTER_LABEL.expense}
@@ -88,7 +106,7 @@ const MovementListFilters = ({
                     <div className="select-wrapper">
                         <select
                             className="form-input"
-                            value={movementCategory}
+                            value={filters.categoryID}
                             onChange={onChangeMovementCategory}
                         >
                             <option
@@ -119,7 +137,7 @@ const MovementListFilters = ({
                         id="startDateFilter"
                         className="form-input"
                         type="date"
-                        value={movementStartDate}
+                        value={filters.startDate}
                         onChange={onChangeMovementStartDate}
                     />
                 </label>
@@ -129,7 +147,7 @@ const MovementListFilters = ({
                         id="endDateFilter"
                         className="form-input"
                         type="date"
-                        value={movementEndDate}
+                        value={filters.endDate}
                         onChange={onChangeMovementEndDate}
                     />
                 </label>
