@@ -133,13 +133,17 @@ export class MovementsService {
     }
 
     if (query.fromDate) {
+      const startDate = new Date(query.fromDate);
+      startDate.setUTCHours(0, 0, 0, 0);
       queryFilter += ' and mov.date >= :fromDate';
-      where.fromDate = query.fromDate;
+      where.fromDate = startDate;
     }
 
     if (query.toDate) {
+      const endDate = new Date(query.toDate);
+      endDate.setUTCHours(23, 59, 59, 999);
       queryFilter += ' and mov.date <= :toDate';
-      where.toDate = query.toDate;
+      where.toDate = endDate;
     }
 
     const movements = await this.movementsRepository
