@@ -7,6 +7,7 @@ import {
 } from "../../types";
 import type { Category, CategoryType } from "../../domain/categories/types";
 import type { MovementFilter } from "../../domain/movements/types";
+import InlineNotification from "../common/InlineNotification";
 
 // Explicación de onChangeFilter:
 // En este punto con "extends keyof" se obtienen las claves de MovementFilter: "startDate", "categoryType", etc. como una unión de tipos, es decir, es igual a "startDate" | "categoryType" ..., lo cual se representa con la variable K.
@@ -20,12 +21,14 @@ type FiltersProps = {
         key: K,
         value: MovementFilter[K],
     ) => void;
+    filterError: string | null;
     categories: Category[];
 };
 
 const MovementListFilters = ({
     filters,
     onChangeFilter,
+    filterError,
     categories,
 }: FiltersProps): JSX.Element => {
     const onChangeMovementType = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -57,102 +60,108 @@ const MovementListFilters = ({
     ) => onChangeFilter("endDate", event.target.value || undefined);
 
     return (
-        <>
-            <div className="form-group">
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="movementTypeFilter"
-                        value={CATEGORY_TYPE_FILTER.ALL}
-                        checked={
-                            (filters.categoryType ||
-                                CATEGORY_TYPE_FILTER.ALL) ===
-                            CATEGORY_TYPE_FILTER.ALL
-                        }
-                        onChange={onChangeMovementType}
-                    />
-                    {CATEGORY_TYPE_FILTER_LABEL.all}
-                </label>
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="movementTypeFilter"
-                        value={CATEGORY_TYPE_FILTER.INCOME}
-                        checked={
-                            filters.categoryType === CATEGORY_TYPE_FILTER.INCOME
-                        }
-                        onChange={onChangeMovementType}
-                    />
-                    {CATEGORY_TYPE_FILTER_LABEL.income}
-                </label>
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="movementTypeFilter"
-                        value={CATEGORY_TYPE_FILTER.EXPENSE}
-                        checked={
-                            filters.categoryType ===
-                            CATEGORY_TYPE_FILTER.EXPENSE
-                        }
-                        onChange={onChangeMovementType}
-                    />
-                    {CATEGORY_TYPE_FILTER_LABEL.expense}
-                </label>
-            </div>
-
-            <div className="form-group">
-                <label className="form-label">
-                    Category
-                    <div className="select-wrapper">
-                        <select
+        <div className="filter-container">
+            <div className="filter-row">
+                <div className="filter-cell">
+                    <label className="form-label">
+                        Start Date
+                        <input
+                            id="startDateFilter"
                             className="form-input"
-                            value={filters.categoryID}
-                            onChange={onChangeMovementCategory}
-                        >
-                            <option
-                                key={CATEGORY_FILTER_ALL}
-                                value={CATEGORY_FILTER_ALL}
+                            type="date"
+                            value={filters.startDate}
+                            onChange={onChangeMovementStartDate}
+                        />
+                    </label>
+                </div>
+                <div className="filter-cell">
+                    <label className="form-label">
+                        End Date
+                        <input
+                            id="endDateFilter"
+                            className="form-input"
+                            type="date"
+                            value={filters.endDate}
+                            onChange={onChangeMovementEndDate}
+                        />
+                    </label>
+                </div>
+            </div>
+            <InlineNotification message={filterError} />
+            <div className="filter-row">
+                <div className="filter-cell filter-cell-radio">
+                    <label className="radio-option">
+                        <input
+                            type="radio"
+                            name="movementTypeFilter"
+                            value={CATEGORY_TYPE_FILTER.ALL}
+                            checked={
+                                (filters.categoryType ||
+                                    CATEGORY_TYPE_FILTER.ALL) ===
+                                CATEGORY_TYPE_FILTER.ALL
+                            }
+                            onChange={onChangeMovementType}
+                        />
+                        <span>{CATEGORY_TYPE_FILTER_LABEL.all}</span>
+                    </label>
+                    <label className="radio-option">
+                        <input
+                            type="radio"
+                            name="movementTypeFilter"
+                            value={CATEGORY_TYPE_FILTER.INCOME}
+                            checked={
+                                filters.categoryType ===
+                                CATEGORY_TYPE_FILTER.INCOME
+                            }
+                            onChange={onChangeMovementType}
+                        />
+                        <span>{CATEGORY_TYPE_FILTER_LABEL.income}</span>
+                    </label>
+                    <label className="radio-option">
+                        <input
+                            type="radio"
+                            name="movementTypeFilter"
+                            value={CATEGORY_TYPE_FILTER.EXPENSE}
+                            checked={
+                                filters.categoryType ===
+                                CATEGORY_TYPE_FILTER.EXPENSE
+                            }
+                            onChange={onChangeMovementType}
+                        />
+                        <span>{CATEGORY_TYPE_FILTER_LABEL.expense}</span>
+                    </label>
+                </div>
+                <div className="filter-cell">
+                    <label className="form-label">
+                        Category
+                        <div className="select-wrapper">
+                            <select
+                                className="form-input"
+                                value={filters.categoryID}
+                                onChange={onChangeMovementCategory}
                             >
-                                {CATEGORY_FILTER_ALL_LABEL}
-                            </option>
-                            {categories.map((category) => {
-                                return (
-                                    <option
-                                        key={category.id}
-                                        value={category.id}
-                                    >
-                                        {category.name}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </label>
+                                <option
+                                    key={CATEGORY_FILTER_ALL}
+                                    value={CATEGORY_FILTER_ALL}
+                                >
+                                    {CATEGORY_FILTER_ALL_LABEL}
+                                </option>
+                                {categories.map((category) => {
+                                    return (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+                    </label>
+                </div>
             </div>
-
-            <div className="form-group">
-                <label className="form-label">
-                    Start Date
-                    <input
-                        id="startDateFilter"
-                        className="form-input"
-                        type="date"
-                        value={filters.startDate}
-                        onChange={onChangeMovementStartDate}
-                    />
-                </label>
-                <label className="form-label">
-                    End Date
-                    <input
-                        id="endDateFilter"
-                        className="form-input"
-                        type="date"
-                        value={filters.endDate}
-                        onChange={onChangeMovementEndDate}
-                    />
-                </label>
-            </div>
-        </>
+        </div>
     );
 };
 

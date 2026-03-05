@@ -8,44 +8,80 @@ import type {
 } from "../domain/movements/types";
 import { movementsService } from "../domain/movements";
 
+import { formatDateForFilters } from "../helpers/common/dateFormatter";
+
+const getDefaultFilters = (): MovementFilter => {
+    const today = new Date();
+    const oneMonthBeforeToday = new Date(today);
+    oneMonthBeforeToday.setDate(oneMonthBeforeToday.getDate() - 30);
+    return {
+        startDate: formatDateForFilters(oneMonthBeforeToday),
+        endDate: formatDateForFilters(today),
+        categoryID: undefined,
+        categoryType: undefined,
+    };
+};
+
 export const useMovements = () => {
     const [movements, setMovements] = useState<Movement[]>([]);
     const [loadingMovements, setLoadingMovements] = useState<boolean>(false);
-    const [filters, setFilters] = useState<MovementFilter>({
-        startDate: undefined,
-        endDate: undefined,
-        categoryID: undefined,
-        categoryType: undefined,
-    });
+    const [filters, setFilters] = useState<MovementFilter>(getDefaultFilters);
+    const [filterError, setFilterError] = useState<string | null>(null);
+
+    /*
+        Para evitar re-renders innecesarios
+        se requiere hacer uso de useCallback
+        para cada función usada en la carga de datos.
+    */
+    const getFilterErrors = useCallback((): string | null => {
+        const { startDate, endDate } = filters;
+
+        if (startDate && endDate && startDate > endDate) {
+            return "Start Date must be before End Date";
+        }
+
+        return null;
+    }, [filters]);
+
+    const loadMovements = useCallback(async (): Promise<
+        ServiceResult<void>
+    > => {
+        try {
+            setFilterError(null);
+
+            const filterErrors = getFilterErrors();
+            if (filterErrors) {
+                setFilterError(filterErrors);
+                return {
+                    success: false,
+                    error: "Filters have errors.",
+                };
+            }
+
+            setLoadingMovements(true);
+
+            const result = await movementsService.getMovements(filters);
+
+            if (result.success) {
+                setMovements(result.data ?? []);
+                return {
+                    success: true,
+                    data: undefined,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: result.error,
+                };
+            }
+        } finally {
+            setLoadingMovements(false);
+        }
+    }, [filters, getFilterErrors]);
 
     useEffect(() => {
-        const loadMovements = async (
-            filters: MovementFilter,
-        ): Promise<ServiceResult<void>> => {
-            try {
-                setLoadingMovements(true);
-
-                const result = await movementsService.getMovements(filters);
-
-                if (result.success) {
-                    setMovements(result.data ?? []);
-                    return {
-                        success: true,
-                        data: undefined,
-                    };
-                } else {
-                    return {
-                        success: false,
-                        error: result.error,
-                    };
-                }
-            } finally {
-                setLoadingMovements(false);
-            }
-        };
-
-        loadMovements(filters);
-    }, [filters]);
+        loadMovements();
+    }, [loadMovements]);
 
     const addMovement = useCallback(
         async (movement: NewMovement): Promise<ServiceResult<void>> => {
@@ -150,6 +186,7 @@ export const useMovements = () => {
             loadingMovements,
             filters,
             setFilters,
+            filterError,
             addMovement,
             editMovement,
             removeMovement,
@@ -159,6 +196,7 @@ export const useMovements = () => {
             loadingMovements,
             filters,
             setFilters,
+            filterError,
             addMovement,
             editMovement,
             removeMovement,

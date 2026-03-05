@@ -50,6 +50,7 @@ const MovementList = ({
         loadingMovements,
         filters,
         setFilters,
+        filterError,
         addMovement,
         editMovement,
         removeMovement,
@@ -125,6 +126,7 @@ const MovementList = ({
                     <p className="table-title">Movements List</p>
                     <MovementListFilters
                         filters={filters}
+                        filterError={filterError}
                         onChangeFilter={updateFilter}
                         categories={categories}
                     />
