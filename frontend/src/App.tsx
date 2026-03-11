@@ -146,65 +146,70 @@ function App(): JSX.Element {
         Con esto se evita tener que realizar refrescos internos en el componente.
     */
     return (
-        <div className="app-container">
-            <header className="app-header">
-                <h1 className="app-title">Personal Finances</h1>
-                <button
-                    className="categories-button"
-                    onClick={openCategoriesModal}
-                >
-                    Categories
-                </button>
-                {notification && (
-                    <NotificationBanner
-                        notification={notification}
-                        onClose={onCloseNotification}
-                    />
-                )}
-            </header>
-            <main className="app-main">
-                {loadingCategories && <div>Loading...</div>}
-                {!loadingCategories && (
-                    <>
-                        <MovementForm
-                            key={movementBeingEdited?.id ?? "new"}
-                            movementToEdit={movementBeingEdited}
-                            onAddMovement={addMovement}
-                            onEditMovement={editMovement}
-                            onClearEditMovement={clearMovementToEdit}
+        <>
+            <title>Personal Finances</title>
+            <div className="app-container">
+                <header className="app-header">
+                    <h1 className="app-title">Personal Finances</h1>
+                    <button
+                        className="categories-button"
+                        onClick={openCategoriesModal}
+                    >
+                        Categories
+                    </button>
+                    {notification && (
+                        <NotificationBanner
+                            notification={notification}
+                            onClose={onCloseNotification}
+                        />
+                    )}
+                </header>
+                <main className="app-main">
+                    {loadingCategories && <div>Loading...</div>}
+                    {!loadingCategories && (
+                        <>
+                            <MovementForm
+                                key={movementBeingEdited?.id ?? "new"}
+                                movementToEdit={movementBeingEdited}
+                                onAddMovement={addMovement}
+                                onEditMovement={editMovement}
+                                onClearEditMovement={clearMovementToEdit}
+                                onNotify={onShowNotification}
+                                categories={categories}
+                            />
+                            <MovementList
+                                onHandleServiceOperation={
+                                    handleServiceOperation
+                                }
+                                movementToEdit={movementBeingEdited}
+                                onEditMovement={defineMovementToEdit}
+                                onClearEditMovement={clearMovementToEdit}
+                                registerCreateMovement={(fn) => {
+                                    createMovementRef.current = fn;
+                                }}
+                                registerEditMovement={(fn) => {
+                                    editMovementRef.current = fn;
+                                }}
+                                categories={categories}
+                            />
+                        </>
+                    )}
+                </main>
+                <Modal
+                    isOpen={isCategoriesModalOpen}
+                    onClose={closeCategoriesModal}
+                    children={
+                        <CategoriesModal
+                            categories={categories}
                             onNotify={onShowNotification}
-                            categories={categories}
+                            onCreateCategory={onCreateCategory}
+                            onEditCategory={onEditCategory}
+                            onDeleteCategory={onDeleteCategory}
                         />
-                        <MovementList
-                            onHandleServiceOperation={handleServiceOperation}
-                            movementToEdit={movementBeingEdited}
-                            onEditMovement={defineMovementToEdit}
-                            onClearEditMovement={clearMovementToEdit}
-                            registerCreateMovement={(fn) => {
-                                createMovementRef.current = fn;
-                            }}
-                            registerEditMovement={(fn) => {
-                                editMovementRef.current = fn;
-                            }}
-                            categories={categories}
-                        />
-                    </>
-                )}
-            </main>
-            <Modal
-                isOpen={isCategoriesModalOpen}
-                onClose={closeCategoriesModal}
-                children={
-                    <CategoriesModal
-                        categories={categories}
-                        onNotify={onShowNotification}
-                        onCreateCategory={onCreateCategory}
-                        onEditCategory={onEditCategory}
-                        onDeleteCategory={onDeleteCategory}
-                    />
-                }
-            />
-        </div>
+                    }
+                />
+            </div>
+        </>
     );
 }
 

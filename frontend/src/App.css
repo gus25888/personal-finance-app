@@ -476,14 +476,30 @@ body {
   font-weight: 600;
 }
 
-.delete-button {
-  background-color: #a33;
+.action-button {
   border: none;
-  color: white;
-  padding: 4px 8px;
+  padding: 4px 6px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.action-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.action-button+.action-button {
+  margin-left: 4px;
+}
+
+.delete-button {
+  background-color: #a33;
+  color: white;
 }
 
 .delete-button:hover {
@@ -492,4 +508,20 @@ body {
 
 .delete-button:active {
   background-color: #822;
+}
+
+.edit-button {
+  background-color: rgb(255, 165, 0);
+  border: 1px solid rgb(200, 120, 0);
+  color: black;
+}
+
+.edit-button:hover {
+  background-color: rgb(255, 180, 50);
+  border-color: rgb(230, 150, 20);
+  box-shadow: 0 0 4px rgba(255, 200, 120, 0.7);
+}
+
+.edit-button:active {
+  background-color: rgb(220, 140, 0);
 }

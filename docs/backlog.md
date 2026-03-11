@@ -84,6 +84,121 @@ Cada tarea incluye categorías para identificar el área de impacto:
 - 0.8.2 — Pruebas unitarias o funcionales en backend
 - 0.8.3 — Validación FE/BE integrada
 
+### 🎨 Tarea 0.9 — Mejora visual de botones de acción
+
+**Categorías:** FE, UI
+
+Objetivo: reemplazar los botones de acción actuales (editar / eliminar) que usan letras por iconos más claros y mejorar su presentación visual.
+
+#### Subtareas
+
+- 0.9.1 — Definir iconos a utilizar
+  - Editar → ✏️
+  - Eliminar → 🗑️
+  - Usar caracteres Unicode o SVG simples.
+
+- 0.9.2 — Reemplazar contenido de botones en la tabla de Movements
+  - Actualizar botones de editar
+  - Actualizar botones de eliminar
+
+- 0.9.3 — Reemplazar contenido de botones en la tabla de Categories (si aplica)
+
+- 0.9.4 — Ajustar estilos CSS de botones de acción
+  - Tamaño consistente
+  - Padding adecuado
+  - Cursor pointer
+  - Hover visual
+
+- 0.9.5 — Validar accesibilidad básica
+  - Agregar atributo `title` en los botones
+  - Ejemplo:
+    - title="Editar movimiento"
+    - title="Eliminar movimiento"
+
+---
+
+### Tarea 0.10 — Formateo de fechas y montos
+
+**Categorías:** FE
+
+Objetivo: mejorar la presentación de los datos financieros usando formatos legibles para el usuario.
+
+#### Subtareas 0.10
+
+- 0.10.1 — Crear utilidades de formato
+  - Crear archivo `formatters.ts` o `utils/formatters.ts`
+
+- 0.10.2 — Implementar función de formateo de fechas
+  - Usar `Intl.DateTimeFormat`
+  - Formato esperado: `dd/mm/yyyy`
+
+- 0.10.3 — Implementar función de formateo de montos
+  - Usar `Intl.NumberFormat`
+  - Moneda local
+  - Separadores de miles
+
+- 0.10.4 — Aplicar formato en el reporte de Movements
+  - Fecha
+  - Monto
+
+- 0.10.5 — Aplicar formato en la sección de Totales
+
+- 0.10.6 — Validar consistencia visual
+  - Alineación correcta de montos en tabla
+  - No mostrar valores sin formato
+
+---
+
+### Tarea 0.11 — Pruebas básicas de Frontend
+
+**Categorías:** QA, FE
+
+Objetivo: asegurar que los componentes principales funcionen correctamente tras la integración con el backend.
+
+#### Subtareas 0.11
+
+- 0.11.1 — Configurar entorno de pruebas
+  - Usar `Vitest`
+  - Usar `Testing Library` para React
+
+- 0.11.2 — Crear pruebas de renderizado de componentes principales
+  - MovementList
+  - MovementForm
+  - CategoriesList (si aplica)
+
+- 0.11.3 — Probar renderizado con datos
+  - Mockear respuesta del backend
+  - Verificar que la tabla muestra registros
+
+- 0.11.4 — Probar acciones básicas del usuario
+  - Crear movimiento
+  - Eliminar movimiento
+
+- 0.11.5 — Validar integración con hooks
+  - Verificar que los hooks cargan datos al montar el componente
+
+- 0.11.6 — Ejecutar pruebas y corregir errores detectados
+
+---
+
+### Tarea 0.12 — Validación final del MVP
+
+**Categorías:** QA, FE, BE
+
+Objetivo: verificar que el sistema completo funciona correctamente antes de cerrar el hito.
+
+#### Subtareas 0.12
+
+- 0.12.1 — Crear movimiento
+- 0.12.2 — Editar movimiento
+- 0.12.3 — Eliminar movimiento
+- 0.12.4 — Crear categoría
+- 0.12.5 — Editar categoría
+- 0.12.6 — Eliminar categoría
+- 0.12.7 — Validar cálculo de totales
+- 0.12.8 — Validar formato visual de datos
+- 0.12.9 — Validar integración completa frontend ↔ backend
+
 ---
 
 ## 🧩 EPIC 1 — Calculadora de Dinero Real

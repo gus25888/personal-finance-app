@@ -1,5 +1,7 @@
 import { useCallback, useEffect, type JSX } from "react";
 
+import { ActionButton } from "../common/ActionButton";
+
 import { CATEGORY_TYPE_LABEL } from "../../types";
 
 import { calculateTotals } from "../../helpers/movements";
@@ -155,8 +157,9 @@ const MovementList = ({
                             {movements.map((movement) => (
                                 <tr key={movement.id} className="table-row">
                                     <td className="table-cell table-cell-center">
-                                        <button
-                                            className="delete-button"
+                                        <ActionButton
+                                            variant="delete"
+                                            title="Delete Movement"
                                             onClick={async () => {
                                                 if (
                                                     confirm(
@@ -168,19 +171,16 @@ const MovementList = ({
                                                     );
                                                 }
                                             }}
-                                        >
-                                            X
-                                        </button>
+                                        />
                                     </td>
                                     <td className="table-cell table-cell-center">
-                                        <button
-                                            className="edit-button"
+                                        <ActionButton
+                                            variant="edit"
+                                            title="Edit Movement"
                                             onClick={() => {
                                                 onEditMovement(movement);
                                             }}
-                                        >
-                                            E
-                                        </button>
+                                        />
                                     </td>
                                     <td className="table-cell table-cell-center">
                                         {movement.categoryName}

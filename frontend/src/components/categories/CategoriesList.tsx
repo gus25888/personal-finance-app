@@ -1,5 +1,7 @@
 import { useState, type JSX } from "react";
 
+import { ActionButton } from "../common/ActionButton";
+
 import { CATEGORY_TYPE_LABEL } from "../../types";
 import {
     NOTIFICATION_TYPES,
@@ -161,8 +163,9 @@ const CategoriesList = ({
                             return (
                                 <tr key={category.id} className="table-row">
                                     <td className="table-cell table-cell-center">
-                                        <button
-                                            className="delete-button"
+                                        <ActionButton
+                                            variant="delete"
+                                            title="Delete Category"
                                             onClick={() => {
                                                 if (
                                                     confirm(
@@ -174,19 +177,16 @@ const CategoriesList = ({
                                                     );
                                                 }
                                             }}
-                                        >
-                                            X
-                                        </button>
+                                        />
                                     </td>
                                     <td className="table-cell table-cell-center">
-                                        <button
-                                            className="edit-button"
+                                        <ActionButton
+                                            variant="edit"
+                                            title="Edit Category"
                                             onClick={() =>
                                                 handleEditClick(category)
                                             }
-                                        >
-                                            E
-                                        </button>
+                                        />
                                     </td>
                                     <td className="table-cell table-cell-center">
                                         {category.name}
