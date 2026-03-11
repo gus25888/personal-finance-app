@@ -1,12 +1,13 @@
-export const formatDateToDDMMYYYY = (date: Date): string => {
-    // TODO: Implementar como parte de la mejora visual de los datos de la tabla de Movements: las fechas deben verse en formato dd-mm-yyyy y los números de montos deberían verse con separadores de miles.
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
+import { CURRENT_LOCALE } from "../../common/constants";
 
-    return `${day}-${month}-${year}`;
+export const formatDate = (date: Date | string): string => {
+    // returns DD-MM-YYYY
+    if (typeof date === "string") {
+        return new Intl.DateTimeFormat(CURRENT_LOCALE).format(new Date(date));
+    } else {
+        return new Intl.DateTimeFormat(CURRENT_LOCALE).format(date);
+    }
 };
-
 export const formatDateForFilters = (date: Date): string =>
     // returns YYYY-MM-DD
     date.toLocaleDateString("en-CA");

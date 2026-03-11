@@ -4,6 +4,9 @@ import { ActionButton } from "../common/ActionButton";
 
 import { CATEGORY_TYPE_LABEL } from "../../types";
 
+import { formatDate } from "../../helpers/common/dateFormatter";
+import { formatCurrency } from "../../helpers/common/currencyFormatter";
+
 import { calculateTotals } from "../../helpers/movements";
 
 import type { ServiceResult } from "../../domain/common/types";
@@ -133,9 +136,9 @@ const MovementList = ({
                         categories={categories}
                     />
                     <p className="movement-totals-container">
-                        <span className="movement-total-item">{`Income: $ ${totalIncome}`}</span>
-                        <span className="movement-total-item">{`Expenses: $ ${totalExpense}`}</span>
-                        <span className="movement-total-item">{`Balance: $ ${balance}`}</span>
+                        <span className="movement-total-item">{`Income: ${formatCurrency(totalIncome)}`}</span>
+                        <span className="movement-total-item">{`Expenses: ${formatCurrency(totalExpense)}`}</span>
+                        <span className="movement-total-item">{`Balance: ${formatCurrency(balance)}`}</span>
                     </p>
                     <table className="movements-table">
                         <thead className="table-header">
@@ -193,13 +196,13 @@ const MovementList = ({
                                         }
                                     </td>
                                     <td className="table-cell table-cell-center">
-                                        {movement.date}
+                                        {formatDate(movement.date)}
                                     </td>
                                     <td className="table-cell">
                                         {movement.description}
                                     </td>
                                     <td className="table-cell table-cell-right">
-                                        {movement.amount}
+                                        {formatCurrency(movement.amount)}
                                     </td>
                                 </tr>
                             ))}
